@@ -1,0 +1,10 @@
+tmux 3.4                                       rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 39 lines
+tmux 3.4                                       rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 27 lines
+tmux 3.4                                       rows=16  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 27 lines
+tmux 3.4 (alternate-screen off)                rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 39 lines
+tmux 3.4 (alternate-screen off)                rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 27 lines
+GNU screen 4.09 (altscreen off, its default)   rows=40  exit 0; left in screen plus scrollback: 24 of 24 words as shown, 24 of 24 as typed, 22 runs of 3 words; dump is 720 lines
+GNU screen 4.09 (altscreen off, its default)   rows=24  exit 0; left in screen plus scrollback: 24 of 24 words as shown, 24 of 24 as typed, 22 runs of 3 words; dump is 720 lines
+GNU screen 4.09 (altscreen on)                 rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 703 lines
+GNU screen 4.09 (altscreen on)                 rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 703 lines
+RESULT CHECK

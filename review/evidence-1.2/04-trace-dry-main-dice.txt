@@ -1,0 +1,140 @@
+Scenario: dry-main-dice   (tool arguments: --dry-run --chain main --dice)
+cold-address.py sha256 7288ed7f0699127ce0adca7c8716ff94c8ebb55a457a5d29deb2797ad9d5dcbd
+
+=== step 'new': exit code 0; trace has 864 lines
+    the tool reported: dry run (network check is informative only)
+A. Programs started (arguments shown with the folders shortened)
+   /usr/local/bin/python3 KIT/cold-address.py --dry-run --chain main --dice
+   /usr/local/bin/python3 -I KIT/cold-address.py --dry-run --chain main --dice
+   /home/claude/tn/bin/truenorthd -datadir=TMP/tn-cold-XXXX -chain=main -listen=0 -connect=0 -dnsseed=0 -fixedseeds=0 -disablewallet=1 -server=1 -rpcbind=127.0.0.1 -rpcallowip=127.0.0.1 -rpcport=PORT -printtoconsole=0 -dbcache=16
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT getblockcount
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT stop
+   -> programs started: 10; with secret material in the arguments: 0; in the environment: 0
+B. Files opened for writing or created, by program
+   python3        /dev/null
+   python3        file in the temporary node folder: /hhrydhbg
+   python3        file in the temporary node folder: /tn-cold-XXXX/stderr.txt
+   python3        file in the tool folder: /out-dry-run/cold-address.txt
+   python3        file in the tool folder: /out-dry-run/cold-addresses.txt
+   python3        file in the tool folder: /out-dry-run/cold-info.txt
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/.cookie.tmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/.lock
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/banlist.json
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/.lock
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/blk00000.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000001.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000002.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000003.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/LOCK
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/MANIFEST-000001
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/MANIFEST-000002
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/rev00000.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/xor.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000001.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000002.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000003.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/LOCK
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/MANIFEST-000001
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/MANIFEST-000002
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/debug.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/fee_estimates.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/mempool.dat.new
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/peers.9839
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/peers.aedf
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/settings.json.tmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/truenorthd.pid
+C. Writes that contain secret material, by program and destination
+   python3        -> terminal                                 numbered word as shown
+   -> destinations other than terminal, pipe and loopback: 0
+D. Sockets created, by program
+   python3        AF_INET SOCK_DGRAM x2, AF_INET SOCK_STREAM x1, AF_INET6 SOCK_DGRAM x2
+   truenorth-cli  AF_INET SOCK_STREAM x7
+   truenorthd     AF_INET SOCK_STREAM x1, AF_NETLINK SOCK_RAW x2
+   Addresses bound or connected to, by program
+   python3        bind to AF_INET 127.0.0.1:0 x1
+   truenorth-cli  connect to AF_INET 127.0.0.1:PORT x7
+   truenorthd     bind to AF_INET 127.0.0.1:PORT x1
+   truenorthd     bind to AF_NETLINK (kernel interface list) x2
+   -> bind/connect to anything but loopback, local sockets and the kernel: 0
+   route look-ups for the offline check (connect on a datagram socket, which sends nothing): 2, of which the
+   kernel had a route for 2; writes or sends to any UDP socket or non-loopback TCP connection: 0
+   getrandom() calls by Python that returned exactly 32 bytes: 3 (all sizes: 8,24,8,24,2496,2496,2496,32,32,32)
+   the 24 words encode exactly (those 32 bytes from the system) XOR SHA-256(dice rolls): True
+   strings cut short by strace (must be 0 for the search to be complete): 0
+E. Left in the temporary folder afterwards: nothing
+
+=== step 'verify': exit code 0; trace has 814 lines
+    the tool reported: OK: the words on your paper give the saved address
+A. Programs started (arguments shown with the folders shortened)
+   /usr/local/bin/python3 KIT/cold-address.py verify --dry-run --chain main
+   /usr/local/bin/python3 -I KIT/cold-address.py verify --dry-run --chain main
+   /home/claude/tn/bin/truenorthd -datadir=TMP/tn-cold-XXXX -chain=main -listen=0 -connect=0 -dnsseed=0 -fixedseeds=0 -disablewallet=1 -server=1 -rpcbind=127.0.0.1 -rpcallowip=127.0.0.1 -rpcport=PORT -printtoconsole=0 -dbcache=16
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT getblockcount
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT -stdin deriveaddresses
+   /home/claude/tn/bin/truenorth-cli -datadir=TMP/tn-cold-XXXX -chain=main -rpcconnect=127.0.0.1 -rpcport=PORT stop
+   -> programs started: 10; with secret material in the arguments: 0; in the environment: 0
+B. Files opened for writing or created, by program
+   python3        /dev/null
+   python3        file in the temporary node folder: /j_b7h4w9
+   python3        file in the temporary node folder: /tn-cold-XXXX/stderr.txt
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/.cookie.tmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/.lock
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/banlist.json
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/.lock
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/blk00000.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000001.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000002.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/000003.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/LOCK
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/MANIFEST-000001
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/index/MANIFEST-000002
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/rev00000.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/blocks/xor.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000001.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000002.dbtmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/000003.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/LOCK
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/MANIFEST-000001
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/chainstate/MANIFEST-000002
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/debug.log
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/fee_estimates.dat
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/mempool.dat.new
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/peers.91d1
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/peers.fa0a
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/settings.json.tmp
+   truenorthd     file in the temporary node folder: /tn-cold-XXXX/truenorthd.pid
+C. Writes that contain secret material, by program and destination
+   -> destinations other than terminal, pipe and loopback: 0
+D. Sockets created, by program
+   python3        AF_INET SOCK_DGRAM x1, AF_INET SOCK_STREAM x1, AF_INET6 SOCK_DGRAM x1
+   truenorth-cli  AF_INET SOCK_STREAM x7
+   truenorthd     AF_INET SOCK_STREAM x1, AF_NETLINK SOCK_RAW x2
+   Addresses bound or connected to, by program
+   python3        bind to AF_INET 127.0.0.1:0 x1
+   truenorth-cli  connect to AF_INET 127.0.0.1:PORT x7
+   truenorthd     bind to AF_INET 127.0.0.1:PORT x1
+   truenorthd     bind to AF_NETLINK (kernel interface list) x2
+   -> bind/connect to anything but loopback, local sockets and the kernel: 0
+   route look-ups for the offline check (connect on a datagram socket, which sends nothing): 1, of which the
+   kernel had a route for 1; writes or sends to any UDP socket or non-loopback TCP connection: 0
+   getrandom() calls by Python that returned exactly 32 bytes: 2 (all sizes: 8,24,8,24,2496,2496,2496,32,32)
+   strings cut short by strace (must be 0 for the search to be complete): 0
+E. Left in the temporary folder afterwards: nothing
+
+Tool folder afterwards: cold-address.py, english.txt, out-dry-run, tn-seed.py
+   out-dry-run/cold-address.txt  (66 bytes, mode 600)
+   out-dry-run/cold-addresses.txt  (340 bytes, mode 600)
+   out-dry-run/cold-info.txt  (632 bytes, mode 600)
+Disk search for the phrase, any 3 words in a row, entropy, seed, keys and xprv (raw and hex) in
+   KIT, TMP, HOME, /tmp, /var/tmp, /dev/shm, /run, /root: 35729 files read, 0 contain secret material
+
+RESULT OK

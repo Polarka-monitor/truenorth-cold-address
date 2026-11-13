@@ -1,0 +1,14 @@
+What the offline check sees on Linux (network namespaces, kernel 6.18.44-fc-v445)
+1. only the loopback interface
+      net_status() -> reasons: none; hints: none  => a real run would CONTINUE as offline
+2. an interface that is up, has carrier and an address (192.168.50.2/24), but no default route (a LAN without a gateway)
+      net_status() -> reasons: none; hints: ['interface eth9 has a link', 'interface eth9p has a link']  => a real run would ASK
+3. the same interface with a default route through 192.168.50.1
+      net_status() -> reasons: ['default IPv4 route through eth9', 'the system has a route to public IPv4 addresses']; hints: ['interface eth9 has a link', 'interface eth9p has a link']  => a real run would STOP
+4. default route only in a separate routing table (policy routing, as some VPN set-ups do), none in the main table
+      kernel would route 8.8.8.8 as: 8.8.8.8 via 192.168.50.1 dev eth9 table 51820 src 192.168.50.2 uid 0 
+      net_status() -> reasons: ['the system has a route to public IPv4 addresses']; hints: ['interface eth9 has a link', 'interface eth9p has a link']  => a real run would STOP
+5. a route to 8.0.0.0/7 only
+      net_status() -> reasons: ['the system has a route to public IPv4 addresses']; hints: ['interface eth9 has a link', 'interface eth9p has a link']  => a real run would STOP
+6. this machine as it is (online)
+      net_status() -> reasons: ['default IPv4 route through eth0', 'the system has a route to public IPv4 addresses']; hints: ['interface eth0 has a link']  => a real run would STOP

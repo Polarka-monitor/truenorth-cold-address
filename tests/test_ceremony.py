@@ -9,10 +9,17 @@ the script, or in the folder named by the TN_BIN environment variable.
 import glob
 import os
 import shutil
+import signal
 import stat
 import subprocess
 import sys
 import tempfile
+import time
+
+# Everything this test creates (copies of the tool, helper node folders) goes into one private folder, so that
+# "nothing is left behind" can be checked exactly, whatever else runs on this computer.
+PRIVATE_TMP = tempfile.mkdtemp(prefix="coldtest-")
+os.environ["TMPDIR"] = tempfile.tempdir = PRIVATE_TMP
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ptydriver as pd   # noqa: E402
@@ -34,7 +41,13 @@ def first_address(words, chain):
 
 
 def leftovers():
-    return set(glob.glob(os.path.join(tempfile.gettempdir(), "tn-cold-*")))
+    return set(glob.glob(os.path.join(PRIVATE_TMP, "tn-cold-*")))
+
+
+def helper_nodes():
+    """Helper nodes of this test that are still running (their data folder is inside the private folder)."""
+    r = subprocess.run(["ps", "-axo", "pid=,command="], capture_output=True, text=True)
+    return [ln.split()[0] for ln in r.stdout.splitlines() if "truenorthd" in ln and PRIVATE_TMP in ln]
 
 
 def numbered_or_typed(words, text):
@@ -164,7 +177,108 @@ if sys.platform.startswith("linux"):
     del tool.__dict__["open"]
     check("WSL is recognised as not checkable", any("WSL" in r for r in reasons))
 
+# 7. Not a plain terminal window: a real run refuses, a dry run says so and goes on
+kit = pd.fresh_kit()
+for var, value, word in (("STY", "4242.pts-0.host", "GNU screen"), ("TMUX", "/tmp/tmux-0/default,1,0", "tmux"),
+                         ("SSH_CONNECTION", "192.0.2.1 50000 192.0.2.2 22", "SSH"), ("SCRIPT", "typescript", "script")):
+    s = pd.Session(kit, [], BIN, env={var: value})
+    rc = s.finish()
+    check("real run refuses when %s is set (%s)" % (var, word),
+          rc == 2 and "not a plain terminal window" in s.buf and word in s.buf, s.buf[-300:])
+s = pd.Session(kit, ["--dry-run"], BIN, env={"STY": "4242.pts-0.host"})
+s.expect(r"A real run would stop or ask because of:")
+s.expect(r"GNU screen")
+s.expect(r"Press Enter to show the 24 words\. ")
+s.key(b"\x03")
+check("dry run inside screen says so and goes on", s.finish() == 130)
+rc, words, s = pd.new_ceremony(kit, BIN, None)
+saved = open(os.path.join(kit, "out-dry-run", "cold-address.txt")).read().strip() if rc == 0 else ""
+check("a plain --dry-run makes a test-network address that cannot receive real coins",
+      rc == 0 and saved.startswith("rnorth1z") and "cannot receive real coins" in s.buf, saved)
+check("the recipe for the paper is printed and saved",
+      rc == 0 and "m/88h/1h/0h/0/0" in s.buf
+      and "recipe for the paper" in open(os.path.join(kit, "out-dry-run", "cold-info.txt")).read())
+shutil.rmtree(kit)
+
+# 8. An early end: the screen is wiped, the helper node stops, nothing is saved
+for name, sig in (("SIGTERM (kill)", signal.SIGTERM), ("SIGHUP (terminal closed)", signal.SIGHUP),
+                  ("SIGQUIT (Ctrl+\\)", signal.SIGQUIT)):
+    kit = pd.fresh_kit()
+    s, words = pd.until_words(kit, BIN)
+    os.kill(s.pid, sig)
+    rc = s.finish()
+    check("%s while the words are shown: screen wiped, nothing saved" % name,
+          rc == 128 + sig and s.wiped() and "Nothing was saved" in s.buf
+          and not os.path.exists(os.path.join(kit, "out-dry-run")), "exit code %s" % rc)
+    shutil.rmtree(kit)
+kit = pd.fresh_kit()
+s, words = pd.until_words(kit, BIN)
+s.key(b"\x1a")                       # Ctrl+Z must not freeze the words on the screen
+time.sleep(0.5)
+s.send("")
+s.expect(r" 1: ")
+s.key(b"\x03")
+rc = s.finish()
+check("Ctrl+Z is ignored; Ctrl+C wipes the screen and saves nothing",
+      rc == 130 and s.wiped() and "Nothing was saved" in s.buf, "exit code %s" % rc)
+shutil.rmtree(kit)
+
+# 9. The private key never leaves the tool: the helper node is only ever given public keys of the user's words
+kit = pd.fresh_kit()
+log = os.path.join(PRIVATE_TMP, "cli-stdin.log")
+wrap = os.path.join(PRIVATE_TMP, "wrapbin")
+os.makedirs(wrap)
+shutil.copy(os.path.join(BIN, "truenorthd"), wrap)
+shutil.copy(os.path.join(BIN, "truenorth-cli"), os.path.join(wrap, "truenorth-cli.real"))
+tool2 = pd.load_tool(kit)
+words2 = None
+# A stand-in for truenorth-cli that records what the tool sends to it on stdin, then calls the real program.
+with open(os.path.join(wrap, "truenorth-cli"), "w") as f:
+    f.write("#!/bin/sh\nif [ \"$5\" = \"-stdin\" ]; then tee -a '%s' | '%s.real' \"$@\"; else exec '%s.real' \"$@\"; fi\n"
+            % (log, os.path.join(wrap, "truenorth-cli"), os.path.join(wrap, "truenorth-cli")))
+os.chmod(os.path.join(wrap, "truenorth-cli"), 0o755)
+src = open(os.path.join(kit, "cold-address.py")).read()
+key = "Linux-x86_64" if sys.platform.startswith("linux") else "Darwin-arm64"
+old = tool2.EXPECT[key]["truenorth-cli"]
+import hashlib   # noqa: E402
+new = hashlib.sha256(open(os.path.join(wrap, "truenorth-cli"), "rb").read()).hexdigest()
+with open(os.path.join(kit, "cold-address.py"), "w") as f:
+    f.write(src.replace(old, new))               # the copy under test accepts the recording stand-in
+rc, words2, s = pd.new_ceremony(kit, wrap, "regtest")
+sent = open(log).read() if os.path.exists(log) else ""
+descs = [ln for ln in sent.splitlines() if ln.startswith("qrh(")]
+priv = [d for d in descs if "/88h/" in d]
+mine = tn.descriptors(tn.master_xprv(tn.bip39_seed(" ".join(words2)), tn.CHAINS["regtest"][0]), 1)[0]["desc"] if words2 else ""
+check("the node gets 5 descriptors: 2 public (test phrase, user) and 3 private (test and throw-away phrases)",
+      rc == 0 and len(descs) == 5 and len(priv) == 3, "%d descriptors, %d private" % (len(descs), len(priv)))
+check("the private descriptor of the user's words is never sent",
+      rc == 0 and mine and mine not in sent and mine.split("/88h")[0] not in sent)
+check("what is sent for the user's words is a public descriptor that gives the saved address",
+      rc == 0 and tool2.public_descriptor(tn, tn.bip39_seed(" ".join(words2)), "regtest") in descs)
+shutil.rmtree(kit)
+
+# 10. tn-seed.py at a keyboard: what is typed is not shown
+kit = pd.fresh_kit()
+phrase = tn.to_mnemonic(bytes(range(32)), tn.wordlist())
+t = pd.Session(kit, [], BIN, argv=[sys.executable, os.path.join(kit, "tn-seed.py"), "restore", "--chain", "regtest", "--json"])
+t.expect(r"not shown as you type\): ")
+t.send(phrase)
+rc = t.finish()
+lines = [ln for ln in t.buf.splitlines() if ln.strip()]
+want = tn.descriptors(tn.master_xprv(tn.bip39_seed(phrase), tn.CHAINS["regtest"][0]), 1)
+check("tn-seed.py restore --json: the typed words are not shown and only the descriptors are printed",
+      rc == 0 and " ".join(phrase.split()[:3]) not in t.raw and len(lines) == 1
+      and __import__("json").loads(lines[0]) == want, "exit code %s, %d lines" % (rc, len(lines)))
+t = pd.Session(kit, [], BIN, argv=[sys.executable, os.path.join(kit, "tn-seed.py"), "new", "--chain", "regtest", "--dice"])
+t.expect(r"not shown as you type\): ")
+t.send(rolls)
+rc = t.finish()
+check("tn-seed.py new --dice: the rolls are asked for and not shown", rc == 0 and rolls not in t.raw and "RECOVERY WORDS" in t.buf)
+shutil.rmtree(kit)
+
+check("no helper node is left running", not helper_nodes(), ",".join(helper_nodes()))
 check("no temporary node folder is left behind", leftovers() <= before, str(leftovers() - before))
+shutil.rmtree(PRIVATE_TMP, ignore_errors=True)
 
 print()
 print("%d check(s) failed: %s" % (len(failed), "; ".join(failed)) if failed else "All checks passed.")

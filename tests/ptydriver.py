@@ -34,14 +34,26 @@ def fresh_kit():
     return kit
 
 
+NOT_A_PLAIN_TERMINAL = ("STY", "TMUX", "SSH_CONNECTION", "SSH_CLIENT", "SSH_TTY", "SCRIPT")
+
+
 class Session:
-    def __init__(self, kit, args, bindir):
+    """The tool (or, with argv, any other command) on a pseudo-terminal of its own.
+
+    The variables that mark screen, tmux, SSH or a recorded session are removed, so that the tests behave the
+    same wherever they are started; a test that wants one of them passes it in env."""
+
+    def __init__(self, kit, args, bindir, env=None, argv=None):
         self.buf, self.raw = "", ""
         self.pid, self.fd = pty.fork()
         if self.pid == 0:
+            for name in NOT_A_PLAIN_TERMINAL:
+                os.environ.pop(name, None)
             os.environ["TERM"] = "xterm-256color"
             os.environ["TN_BIN"] = bindir
-            os.execvp(sys.executable, [sys.executable, os.path.join(kit, "cold-address.py")] + list(args))
+            os.environ.update(env or {})
+            argv = argv or [sys.executable, os.path.join(kit, "cold-address.py")] + list(args)
+            os.execvp(argv[0], argv)
 
     def _read(self):
         try:
@@ -65,6 +77,14 @@ class Session:
 
     def send(self, line):
         os.write(self.fd, (line + "\n").encode())
+
+    def key(self, data):
+        """Raw keys, for example b"\\x03" for Ctrl+C or b"\\x1a" for Ctrl+Z."""
+        os.write(self.fd, data)
+
+    def wiped(self):
+        """True if the alternate screen was used and the last thing done to it was to wipe and leave it."""
+        return ALT_ON in self.raw and self.raw.rfind(ALT_OFF) > self.raw.rfind(ALT_ON)
 
     def finish(self, timeout=180):
         end = time.time() + timeout
@@ -98,9 +118,18 @@ def grab_words(screen):
     return [found[i] for i in range(1, 25)]
 
 
+def until_words(kit, bindir, chain="regtest", env=None):
+    """Start 'new' as a dry run and go as far as the screen that shows the words. Returns (session, words)."""
+    s = Session(kit, ["--dry-run", "--chain", chain], bindir, env=env)
+    s.expect(r"Press Enter to show the 24 words\. ")
+    s.send("")
+    return s, grab_words(s.expect(r"The words will disappear from the screen\. "))
+
+
 def new_ceremony(kit, bindir, chain="main", mode="ok", dice=None):
-    """Run 'new' as a dry run. mode: ok | typo | fail3. Returns (exit code, words, session)."""
-    args = ["--dry-run", "--chain", chain] + (["--dice"] if dice is not None else [])
+    """Run 'new' as a dry run. mode: ok | typo | fail3. chain None: the tool's own choice for a dry run.
+    Returns (exit code, words, session)."""
+    args = ["--dry-run"] + (["--chain", chain] if chain else []) + (["--dice"] if dice is not None else [])
     s = Session(kit, args, bindir)
     words = None
     if dice is not None:

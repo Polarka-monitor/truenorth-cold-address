@@ -1,0 +1,32 @@
+== key (from contrib/keys/septentrion-dev.asc in the v30.5.4 source tree)
+pub   ed25519 2026-09-11 [C] [expires: 2031-09-10]
+      3F0BAE0458615427B8CA935E3E242DF5E4478AE5
+uid           [ unknown] septentrion-dev <septentrion-dev@tutamail.com>
+sub   ed25519 2026-09-11 [S] [expires: 2031-09-10]
+      895B7591E9701E99D87D58A9B932A2FBD92C626D
+
+== gpg --verify SHA256SUMS.asc SHA256SUMS
+gpg: Signature made Thu Nov 12 19:25:00 2026 CET
+gpg:                using EDDSA key 895B7591E9701E99D87D58A9B932A2FBD92C626D
+gpg: Good signature from "septentrion-dev <septentrion-dev@tutamail.com>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 3F0B AE04 5861 5427 B8CA  935E 3E24 2DF5 E447 8AE5
+     Subkey fingerprint: 895B 7591 E970 1E99 D87D  58A9 B932 A2FB D92C 626D
+exit=0
+== archive checksums against SHA256SUMS
+truenorth-v30.5.4-linux-x86_64.tar.gz: OK
+truenorth-v30.5.4-macos-arm64.tar.gz: OK
+== binaries inside the archives (fresh extraction)
+3b06c5d55566690e3158c581b89e9fac5f6f6ee7a3b320012111c7db248b3589  truenorth-v30.5.4-linux-x86_64/bin/truenorthd
+ab90e2cb6f513510d6df482c3f4da28f55dc7782fa51f503b6765ed2e89f5ced  truenorth-v30.5.4-macos-arm64/bin/truenorthd
+2c46f09a18eb20cf40dd6f9ebac31d4654d1ba25e2296b2c534d9bba018dfd5d  truenorth-v30.5.4-linux-x86_64/bin/truenorth-cli
+f40ceb7dc88ef73db88b88bfa186f93da96e41e40ab5a742e97d02dd4a1f7b32  truenorth-v30.5.4-macos-arm64/bin/truenorth-cli
+== values pinned in cold-address.py
+44-        "truenorthd": "ab90e2cb6f513510d6df482c3f4da28f55dc7782fa51f503b6765ed2e89f5ced",
+45-        "truenorth-cli": "f40ceb7dc88ef73db88b88bfa186f93da96e41e40ab5a742e97d02dd4a1f7b32",
+48-        "truenorthd": "3b06c5d55566690e3158c581b89e9fac5f6f6ee7a3b320012111c7db248b3589",
+49-        "truenorth-cli": "2c46f09a18eb20cf40dd6f9ebac31d4654d1ba25e2296b2c534d9bba018dfd5d",
+== binaries used for the tests in this review
+3b06c5d55566690e3158c581b89e9fac5f6f6ee7a3b320012111c7db248b3589  /home/claude/tn/bin/truenorthd
+2c46f09a18eb20cf40dd6f9ebac31d4654d1ba25e2296b2c534d9bba018dfd5d  /home/claude/tn/bin/truenorth-cli

@@ -1,0 +1,18 @@
+Review check T7: what the offline check of cold-address.py 1.1 sees on Linux (network namespaces, kernel 6.18.44-fc-v445)
+1. only the loopback interface
+      net_status() -> reasons: none; hints: none  => a real run would CONTINUE as offline
+2. an interface that is up, has carrier and an address (192.168.50.2/24), but no default route (a LAN without a gateway)
+      eth9@eth9p       UP             192.168.50.2/24 
+      route: 192.168.50.0/24 dev eth9 proto kernel scope link src 192.168.50.2 
+      net_status() -> reasons: none; hints: none  => a real run would CONTINUE as offline
+3. the same interface with a default route through 192.168.50.1
+      route: default via 192.168.50.1 dev eth9 
+      route: 192.168.50.0/24 dev eth9 proto kernel scope link src 192.168.50.2 
+      net_status() -> reasons: ['default IPv4 route through eth9']; hints: none  => a real run would STOP
+4. default route only in a separate routing table (policy routing, as some VPN set-ups do), none in the main table
+      table 51820: default via 192.168.50.1 dev eth9 
+      kernel would route 8.8.8.8 as: 8.8.8.8 via 192.168.50.1 dev eth9 table 51820 src 192.168.50.2 uid 0 
+      net_status() -> reasons: none; hints: none  => a real run would CONTINUE as offline
+5. this machine as it is (online)
+      net_status() -> reasons: ['default IPv4 route through eth0']; hints: none  => a real run would STOP
+IPv6: this kernel has no /proc/net/ipv6_route, so the IPv6 branch could not be exercised here.

@@ -1,0 +1,54 @@
+--- attempt 1
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program
+--- attempt 2
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program
+--- attempt 3
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program
+--- attempt 4
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program
+--- attempt 5
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program
+--- attempt 6
+Review check T8, cold-address.py sha256 of the tested copy: see FILES.sha256 (version 1.1)
+  another program took the tool's RPC port before the tool's own node could: True
+  outcome for the user: the tool stopped before the ceremony
+  requests the other program received from the tool: 0 ()
+  of these, sent with the tool's RPC credentials attached: 0
+  requests that carried the PRIVATE descriptor of the user's new words: 0
+  the tool's own helper node at the end: not running (it could not open its port and quit)
+RESULT OK: no private descriptor reached the other program

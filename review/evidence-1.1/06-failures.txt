@@ -1,0 +1,19 @@
+Ctrl+C at the prompt before the words                      exit 130  alt screen not used yet           node stopped  temp folder removed  out folder no 
+      last line: Interrupted. Nothing was saved.
+Ctrl+C while the words are shown                           exit 130  alt screen wiped and left         node stopped  temp folder removed  out folder no 
+      last line: Interrupted. Nothing was saved.
+Ctrl+C while typing the words back                         exit 130  alt screen wiped and left         node stopped  temp folder removed  out folder no 
+      last line: Interrupted. Nothing was saved.
+Ctrl+D (end of input) while the words are shown            exit 2    alt screen wiped and left         node stopped  temp folder removed  out folder no 
+      last line: STOP: The input ended.
+helper node killed just before the addresses are computed  exit 2    alt screen wiped and left         node stopped  temp folder removed  out folder no 
+      last line: STOP: TrueNorth Core did not compute the addresses (code 1).
+SIGTERM (kill) while the words are shown                   exit -15  alt screen NOT LEFT (words stay)  node RUNNING  temp folder LEFT     out folder no 
+      last line: When they are written down, press Enter. The words will disappear from the screen.
+SIGHUP while the words are shown                           exit -1   alt screen NOT LEFT (words stay)  node RUNNING  temp folder LEFT     out folder no 
+      last line: When they are written down, press Enter. The words will disappear from the screen.
+terminal window closed while the words are shown           exit -1   alt screen NOT LEFT (words stay)  node RUNNING  temp folder LEFT     out folder no 
+      last line: When they are written down, press Enter. The words will disappear from the screen.
+SIGQUIT (Ctrl+\) while the words are shown                 exit -3   alt screen NOT LEFT (words stay)  node RUNNING  temp folder LEFT     out folder no 
+      last line: When they are written down, press Enter. The words will disappear from the screen.
+RESULT CHECK

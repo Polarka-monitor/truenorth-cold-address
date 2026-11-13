@@ -1,0 +1,13 @@
+Review check 10: the macOS branch of the offline check, run on a MacBook (Apple silicon, Python 3.14.3) with
+the published cold-address.py 1.1 (commit 380212820c2b3485e018588057529baa9df14041).
+The computer was ONLINE at the time. Only net_status() was called; no ceremony was run.
+
+net_status() returned
+  reasons: 'Wi-Fi is on (en0)', 'default IPv4 route through en0'        => a real run would STOP
+  hints:   'interface en0 is active (address x.x.x.x)'
+
+The routing table at that moment also held default routes through tunnel interfaces (utun...), for IPv4 and
+IPv6. The check skips those by design: macOS keeps them even when no physical link exists.
+
+Not measured: the same computer with Wi-Fi off (the state of a real run), a cable or a tethered phone, and
+what Terminal.app keeps in its scrollback after a run.

@@ -1,0 +1,8 @@
+tests/test_port_owner.py (as written for 1.2) run against the tool files of 1.1:
+FAIL  round 1: the port was taken by a stranger; the tool stopped before the ceremony; requests the stranger got: 1
+FAIL  round 2: the port was taken by a stranger; the tool stopped before the ceremony; requests the stranger got: 1
+FAIL  round 3: the port was taken by a stranger; the tool stopped before the ceremony; requests the stranger got: 1
+FAIL  round 4: the port was taken by a stranger; the tool stopped before the ceremony; requests the stranger got: 1
+FAIL  round 5: the port was taken by a stranger; the tool stopped before the ceremony; requests the stranger got: 1
+
+5 round(s) failed: round 1; round 2; round 3; round 4; round 5

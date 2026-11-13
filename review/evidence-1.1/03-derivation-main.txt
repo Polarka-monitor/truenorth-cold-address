@@ -1,0 +1,8 @@
+  100 phrases, 0 mismatches, 12 s
+  200 phrases, 0 mismatches, 24 s
+  300 phrases, 0 mismatches, 36 s
+  400 phrases, 0 mismatches, 48 s
+  500 phrases, 0 mismatches, 59 s
+chain main: 500 random phrases x 5 addresses, all start with north1z: checked on the last phrase: True
+chain main: mismatches between the Python computation and TrueNorth Core: 0 of 500 phrases (2500 addresses)
+RESULT OK

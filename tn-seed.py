@@ -5,13 +5,16 @@ Makes (or restores) a BIP39 recovery phrase and turns it into the private
 descriptors that TrueNorth Core imports with `importdescriptors`. The default
 P2QRH path is the one Core itself uses: m/88h/1867h/0h (1h on test chains).
 
-Run it ONLY on a machine that is offline and will stay offline. It prints
-secrets. Python standard library only, so it can be read and audited in one
+It handles secrets. `new` shows the words and prints private descriptors: run it
+only on a machine that is offline and will stay offline. `restore` asks for the
+words without showing them; with --json it prints nothing but the descriptors,
+so that they can go straight into TrueNorth Core through a pipe and never touch
+a file. Python standard library only, so it can be read and audited in one
 sitting; no elliptic-curve code is needed because Core derives the keys.
 
   python3 tn-seed.py selftest
-  python3 tn-seed.py new      [--chain main|testnet4|regtest] [--words 24|12] [--dice DIGITS] [--passphrase] [--out FILE]
-  python3 tn-seed.py restore  [--chain main|testnet4|regtest] [--passphrase] [--out FILE | --check FILE]
+  python3 tn-seed.py new      [--chain main|testnet4|regtest] [--words 24|12] [--dice] [--passphrase] [--out FILE]
+  python3 tn-seed.py restore  [--chain main|testnet4|regtest] [--passphrase] [--json | --out FILE | --check FILE]
 """
 import argparse
 import getpass
@@ -129,6 +132,13 @@ def descriptors(xprv, coin):
     return res
 
 
+def secret_line(prompt):
+    """One line of secret input. At a keyboard it is not echoed, so it cannot end up in the scrollback."""
+    if sys.stdin.isatty():
+        return getpass.getpass(prompt)
+    return sys.stdin.readline()
+
+
 def selftest(words):
     ent = bytes(16)
     assert to_mnemonic(ent, words) == "abandon " * 11 + "about"
@@ -148,23 +158,27 @@ def main():
     ap.add_argument("cmd", choices=["new", "restore", "selftest"])
     ap.add_argument("--chain", choices=list(CHAINS), default="main")
     ap.add_argument("--words", type=int, choices=[12, 24], default=24)
-    ap.add_argument("--dice", default="", help="optional dice rolls (digits 1-6, 99 or more) mixed into the system randomness")
+    ap.add_argument("--dice", action="store_true", help="new only: ask for dice rolls (digits 1 to 6, 99 or more) and mix them into the system randomness")
     ap.add_argument("--passphrase", action="store_true", help="ask for an extra BIP39 passphrase (it is NOT recoverable from the words)")
     ap.add_argument("--out", help="write the importdescriptors JSON to this file (mode 0600) instead of printing it")
     ap.add_argument("--check", help="restore only: compare with a file written by --out and report whether the words match")
+    ap.add_argument("--json", action="store_true", help="restore only: print nothing but the descriptors, for a pipe into truenorth-cli")
     a = ap.parse_args()
+    if a.json and a.cmd != "restore":
+        sys.exit("--json is for restore only")
     words = wordlist()
     if a.cmd == "selftest":
         return selftest(words)
     if a.cmd == "new":
         ent = os.urandom(32)
         if a.dice:
-            if len(a.dice) < 99 or set(a.dice) - set("123456"):
+            dice = secret_line("Dice rolls, digits 1 to 6, at least 99 (not shown as you type): ").strip()
+            if len(dice) < 99 or set(dice) - set("123456"):
                 sys.exit("--dice needs at least 99 rolls written as digits 1 to 6")
-            ent = bytes(x ^ y for x, y in zip(ent, hashlib.sha256(a.dice.encode()).digest()))
+            ent = bytes(x ^ y for x, y in zip(ent, hashlib.sha256(dice.encode()).digest()))
         mnemonic = to_mnemonic(ent[: a.words * 4 // 3], words)
     else:
-        mnemonic = " ".join(input("Recovery words: ").lower().split())
+        mnemonic = " ".join(secret_line("Recovery words, all on one line (not shown as you type): ").lower().split())
     err = check_mnemonic(mnemonic, words)
     if err:
         sys.exit("Recovery phrase rejected: " + err)
@@ -190,7 +204,8 @@ def main():
         with os.fdopen(fd, "w") as f:
             json.dump(descs, f)
         return
-    print("Private descriptors for `truenorth-cli importdescriptors` (as secret as the words):\n")
+    if not a.json:
+        print("Private descriptors for `truenorth-cli importdescriptors` (as secret as the words):\n")
     print(json.dumps(descs))
 
 

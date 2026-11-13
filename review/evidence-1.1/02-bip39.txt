@@ -1,0 +1,7 @@
+tn-seed.py sha256 b8f1ea5a863118cf4881d0e9076f428bad1c3e165bd12606a450858657212259
+word list identical to the reference library's list: yes (2048 words)
+official BIP39 vectors (entropy -> words -> seed -> root xprv): 24 of 24 pass
+random 256-bit entropies, words equal to the reference and back to the same entropy: 20000 of 20000
+random phrases, 64-byte seed equal to the reference: 400 of 400
+damaged phrases: validity decision equal to the reference in 20000 of 20000; 86 (0.43 %) pass the checksum by chance
+RESULT OK

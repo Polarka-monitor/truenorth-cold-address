@@ -1,6 +1,7 @@
 #!/bin/sh
-# Runs every check in this repository. Needs Python 3.9 or newer and the official TrueNorth Core v30.5.4
-# programs: in ./bin, in an unpacked release folder next to cold-address.py, or in the folder named by TN_BIN.
+# Runs every check in this repository. The tests need Python 3.9 or newer (the tool itself runs on 3.8) and the
+# official TrueNorth Core v30.5.4 programs: in ./bin, in an unpacked release folder next to cold-address.py, or
+# in the folder named by TN_BIN.
 set -e
 cd "$(dirname "$0")/.."
 
@@ -10,8 +11,14 @@ python3 tn-seed.py selftest
 echo "== the procedure, through a pseudo-terminal"
 python3 tests/test_ceremony.py
 
+echo "== a stranger on the helper node's port"
+python3 tests/test_port_owner.py
+
 echo "== spending on regtest"
 python3 tests/test_spend.py
+
+echo "== the offline check and a real run, in network namespaces (Linux, root)"
+python3 tests/test_linux_offline.py
 
 echo "== test vectors"
 tmp=$(mktemp)

@@ -1,0 +1,13 @@
+tmux 3.4                                       rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 40 lines
+tmux 3.4                                       rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 35 lines
+tmux 3.4                                       rows=16  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 32 lines
+tmux 3.4 (alternate-screen off)                rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 40 lines
+tmux 3.4 (alternate-screen off)                rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 35 lines
+tmux 3.4 (alternate-screen off)                a REAL run here is refused: not a plain terminal window
+GNU screen 4.09 (altscreen off, its default)   rows=40  exit 0; left in screen plus scrollback: 24 of 24 words as shown, 24 of 24 as typed, 22 runs of 3 words; dump is 720 lines
+GNU screen 4.09 (altscreen off, its default)   rows=24  exit 0; left in screen plus scrollback: 24 of 24 words as shown, 24 of 24 as typed, 22 runs of 3 words; dump is 720 lines
+GNU screen 4.09 (altscreen off, its default)   a REAL run here is refused: not a plain terminal window
+GNU screen 4.09 (altscreen on)                 rows=40  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 714 lines
+GNU screen 4.09 (altscreen on)                 rows=24  exit 0; left in screen plus scrollback: 0 of 24 words as shown, 0 of 24 as typed, 0 runs of 3 words; dump is 714 lines
+GNU screen 4.09 (altscreen on)                 a REAL run here is refused: not a plain terminal window
+RESULT CHECK
