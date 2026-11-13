@@ -1,0 +1,260 @@
+{
+ "description": "P2QRH test vectors for TrueNorth (NORTH). Keys come from the public BIP39 test phrase; test use only.",
+ "made_with": "vectors/tnvec.py (Python standard library only, no code shared with TrueNorth Core); every value was checked against TrueNorth Core v30.5.4 on regtest",
+ "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+ "bip39_passphrase": "",
+ "seed": "5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4",
+ "derivation": "m/88h/COINh/0h/branch/index, x-only key",
+ "commitment_formula": "SHA256('TrueNorth/QRH/v1' || scheme_id || xonly_pubkey || script_root), script_root = 32 zero bytes",
+ "chains": {
+  "main": {
+   "hrp": "north",
+   "coin_type": 1867,
+   "master_xprv": "Tprv127AUUZj4XJtsAw26pAaqNoWbWDHJWVBMeSbPJEWPMuuuWkJZLcDsSAwv6QsLXzQvQUMY3a2hZJmR5wh7k6i2Ly44kY4VrKifnVqb6CmLaAj",
+   "descriptors": [
+    "qrh(Tprv127AUUZj4XJtsAw26pAaqNoWbWDHJWVBMeSbPJEWPMuuuWkJZLcDsSAwv6QsLXzQvQUMY3a2hZJmR5wh7k6i2Ly44kY4VrKifnVqb6CmLaAj/88h/1867h/0h/0/*)#4jqcyrye",
+    "qrh(Tprv127AUUZj4XJtsAw26pAaqNoWbWDHJWVBMeSbPJEWPMuuuWkJZLcDsSAwv6QsLXzQvQUMY3a2hZJmR5wh7k6i2Ly44kY4VrKifnVqb6CmLaAj/88h/1867h/0h/1/*)#yx9eek5p"
+   ],
+   "keys": [
+    {
+     "path": "m/88h/1867h/0h/0/0",
+     "private_key": "cf312897d6bdfd113e9600643eb56d109771de059a4436b74339212024d41b88",
+     "xonly_pubkey": "0a4c0d6bddea7e0f4cfd2f0bcab13e97e3033e71155467a5f6ca930e190f8994",
+     "commitment": "97354e937b8ce028f2e13618f379838394688415cddb3c97ba3aa51489b48299",
+     "scriptPubKey": "522097354e937b8ce028f2e13618f379838394688415cddb3c97ba3aa51489b48299",
+     "address": "north1zju65aymm3nsz3uhpxcv0x7vrsw2x3pq4ehdne9a682j3fzd5s2vsenx7fx"
+    },
+    {
+     "path": "m/88h/1867h/0h/0/1",
+     "private_key": "d74e3f320ac628933742bbdd6c06e949b4a208dbdf6caf6f91300dfdb56c0ec5",
+     "xonly_pubkey": "d7114daf31a024be649e322b9b277fabbad3071db42cd2eedb32dd446177cb88",
+     "commitment": "a19aed975f049b767449c78ac362162d765cce5eeb76e8ef6f13cc934759e1b2",
+     "scriptPubKey": "5220a19aed975f049b767449c78ac362162d765cce5eeb76e8ef6f13cc934759e1b2",
+     "address": "north1z5xdwm96lqjdhvazfc79vxcsk94m9enj7admw3mm0z0xfx36euxeq8j99lg"
+    },
+    {
+     "path": "m/88h/1867h/0h/0/2",
+     "private_key": "6d2191092af2ac56b78caf10eecef3fb23c8fa48639212ab8dfdae4a1d95f8af",
+     "xonly_pubkey": "5a0b786673fa1d37eb3027d960a352f6638ac07f6a408edc2eba330169b13862",
+     "commitment": "b464ee5141cc6f48666dbb83bf6757fa605d53c2fad2361920ce6a837d125539",
+     "scriptPubKey": "5220b464ee5141cc6f48666dbb83bf6757fa605d53c2fad2361920ce6a837d125539",
+     "address": "north1zk3jwu52pe3h5sendhwpm7e6hlfs9657zltfrvxfqee4gxlgj25usu60dh3"
+    },
+    {
+     "path": "m/88h/1867h/0h/1/0",
+     "private_key": "5e0dd868772227b0d573044f31a66660dee0b05d6b947ce8da3e2e0fbfa15ccd",
+     "xonly_pubkey": "c424506ba04986c3f9a684c6caa88a61b99ed5f4a43b0103d23b9a01409c5ce0",
+     "commitment": "cf8932408d2cca8604b72ef8782b2c99910c4263174e96e6dbe4dff3379adb4c",
+     "scriptPubKey": "5220cf8932408d2cca8604b72ef8782b2c99910c4263174e96e6dbe4dff3379adb4c",
+     "address": "north1ze7ynysyd9n9gvp9h9mu8s2evnxgscsnrza8fdekmun0lxdu6mdxqxz2rge"
+    },
+    {
+     "path": "m/88h/1867h/0h/1/1",
+     "private_key": "9f895ee8599a8665626d35fa3ba578125b025e789347d7cd051b6c0bcbd5f7f4",
+     "xonly_pubkey": "290e5f75006abfb9d99d470b1ab1a5d3a90dc9a5d2bd0eecfba12e39f6a36f70",
+     "commitment": "1a81e2faed49470e9bb2d0e5810c11b13026bbbdaa45d2259a7d740f2800e0f7",
+     "scriptPubKey": "52201a81e2faed49470e9bb2d0e5810c11b13026bbbdaa45d2259a7d740f2800e0f7",
+     "address": "north1zr2q797hdf9rsaxaj6rjczrq3kyczdwaa4fzayfv6046q72qqurmsp6788r"
+    }
+   ]
+  },
+  "regtest": {
+   "hrp": "rnorth",
+   "coin_type": 1,
+   "master_xprv": "tpruZLtDPZhDAKMtx9j4Kf9wVhCiv4T3hDcT9Rt7YHKyi92bP6GZSy5JGkWdVbDMrHu47UrGy2hQM4S6rvG713SrukiwKrADYSG7vMLMat58gzb",
+   "descriptors": [
+    "qrh(tpruZLtDPZhDAKMtx9j4Kf9wVhCiv4T3hDcT9Rt7YHKyi92bP6GZSy5JGkWdVbDMrHu47UrGy2hQM4S6rvG713SrukiwKrADYSG7vMLMat58gzb/88h/1h/0h/0/*)#cneu2a93",
+    "qrh(tpruZLtDPZhDAKMtx9j4Kf9wVhCiv4T3hDcT9Rt7YHKyi92bP6GZSy5JGkWdVbDMrHu47UrGy2hQM4S6rvG713SrukiwKrADYSG7vMLMat58gzb/88h/1h/0h/1/*)#f8uahg4f"
+   ],
+   "keys": [
+    {
+     "path": "m/88h/1h/0h/0/0",
+     "private_key": "b0fecc8228508c271a86ae9e65e4ad594b7f78e2efa92ad8131d00c31b48cae6",
+     "xonly_pubkey": "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "commitment": "4a19d32341e8c09629a3642c5175b94deaf120becc335ade5690ad2eeec95845",
+     "scriptPubKey": "52204a19d32341e8c09629a3642c5175b94deaf120becc335ade5690ad2eeec95845",
+     "address": "rnorth1zfgvaxg6parqfv2drvsk9zadefh40zg97ese44hjkjzkjamkftpzsnpx4h6"
+    },
+    {
+     "path": "m/88h/1h/0h/0/1",
+     "private_key": "5f7c31ee2c966411fa160f4c4427612e14b975e32ab2b62c62cea1760eea06e1",
+     "xonly_pubkey": "d922837606a60d0b2c6aae877f7201e4396cf396264e28216ad701856c597ae7",
+     "commitment": "31d71792435105066e2194883faff211c51b1b35d3fdd85951ddd6ea930a5d50",
+     "scriptPubKey": "522031d71792435105066e2194883faff211c51b1b35d3fdd85951ddd6ea930a5d50",
+     "address": "rnorth1zx8t30yjr2yzsvm3pjjyrltljz8z3kxe4607ask23mhtw4yc2t4gqvrfxxy"
+    },
+    {
+     "path": "m/88h/1h/0h/0/2",
+     "private_key": "bdb2fd7855f6a9805903ac160f35d4c60c1b14b8272e967f7630f15a08f15034",
+     "xonly_pubkey": "ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c5",
+     "commitment": "977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d110",
+     "scriptPubKey": "5220977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d110",
+     "address": "rnorth1zjaakspncmtwxctmtt7p34ar4jqxdnes86z65nen0su9u388e6ygqwdwxjz"
+    },
+    {
+     "path": "m/88h/1h/0h/1/0",
+     "private_key": "d2d1cd98a5f3d02b5aaa1efc1558897de73e40bc78a4f10b1a3f79196cfe1e00",
+     "xonly_pubkey": "129e36ceef7ba606dbf4841f1c58adeb63c5dcc7e2832aa13bec46ec7eca8ff2",
+     "commitment": "18638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030",
+     "scriptPubKey": "522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030",
+     "address": "rnorth1zrp3c5gqm0zprswk34z8p759uh2uhlg87ar6mks4400dv2e2pcqcqm9vwfg"
+    },
+    {
+     "path": "m/88h/1h/0h/1/1",
+     "private_key": "b45a88e98ac785a76cd05c9f6b888d0cc7e89978132c06d68d2f742cc2cb2a69",
+     "xonly_pubkey": "6f9522fc04b2e0650af589e3b5f4c8eb6e6e75849151444ec82d722decfee9be",
+     "commitment": "c6105b470a192ee99beffc2ad3259f1bcc3c1b3cdf9ea604e343a494e3445dfd",
+     "scriptPubKey": "5220c6105b470a192ee99beffc2ad3259f1bcc3c1b3cdf9ea604e343a494e3445dfd",
+     "address": "rnorth1zccg9k3c2ryhwnxl0ls4dxfvlr0xrcxeum702vp8rgwjffc6yth7sw8xh5z"
+    }
+   ]
+  }
+ },
+ "spend": {
+  "chain": "regtest",
+  "what": "two P2QRH key-path inputs (keys 0/0 and 0/1), outputs to 1/0 and 0/2, SIGHASH_DEFAULT",
+  "version": 2,
+  "locktime": 0,
+  "inputs": [
+   {
+    "txid": "70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92",
+    "vout": 0,
+    "sequence": 4294967293,
+    "amount_sat": 51200000000,
+    "scriptPubKey": "52204a19d32341e8c09629a3642c5175b94deaf120becc335ade5690ad2eeec95845",
+    "key_path": "m/88h/1h/0h/0/0"
+   },
+   {
+    "txid": "fd45cd0a193cf11f9d65309ab79970c268d09692a08c46054606bbceb83f190c",
+    "vout": 0,
+    "sequence": 4294967293,
+    "amount_sat": 51200000000,
+    "scriptPubKey": "522031d71792435105066e2194883faff211c51b1b35d3fdd85951ddd6ea930a5d50",
+    "key_path": "m/88h/1h/0h/0/1"
+   }
+  ],
+  "outputs": [
+   {
+    "amount_sat": 100000000000,
+    "scriptPubKey": "522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030"
+   },
+   {
+    "amount_sat": 2399980000,
+    "scriptPubKey": "5220977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d110"
+   }
+  ],
+  "sighash_intermediates": {
+   "sha_prevouts": "29dac2f6915dd895ce749b7a061af86eabfa1e24e882155b8ad426290d1c2f45",
+   "sha_amounts": "8cc0ce9f68e6b45421bfd30a409b20323193cec7765abe38df407f035a169bc3",
+   "sha_scriptpubkeys": "56d450c729eb3b9df9e48df81c18e037e1d93d902d007709fd0547d878f02d4b",
+   "sha_sequences": "82d397cbbcff87bc5d0c4c70e424f9b830efbad7bf0be479da5d1d1bafdb9798",
+   "sha_outputs": "2c290f5e017e7ff679af03da6b8b240867252ef8c1ae0af43aa98e0d75fb1589"
+  },
+  "signature_hashes": [
+   "132840231516606bac11e6e2273c9807fae0c1996cd0a6880b7bdddf59d78053",
+   "81c7e867ca06b0e588e1dd1a7a643d3ed1df8fe3374e249a19c05839bd5ceb43"
+  ],
+  "bip340_aux_rand": "0000000000000000000000000000000000000000000000000000000000000000",
+  "signatures": [
+   "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+   "7dd656032d3b1997bc3505fcb56607055b5087833bbfe9b5a46253e717a925b6bde0ddd5432159da24694fb3e6e6a1c312d3befa16683ef5da63ec66ed790241"
+  ],
+  "witness_layout": "per input, in serialization order: signature (64 bytes), x-only public key (32 bytes), scheme id (1 byte, 0x01)",
+  "unsigned_tx": "020000000292dd4a86cacba6dd1b6d9f231371c453eacf506200a75c0f261e9d748354c2700000000000fdffffff0c193fb8cebb064605468ca09296d068c27099b79a30659d1ff13c190acd45fd0000000000fdffffff0200e876481700000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030e0c90c8f00000000225220977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d11000000000",
+  "signed_tx": "0200000000010292dd4a86cacba6dd1b6d9f231371c453eacf506200a75c0f261e9d748354c2700000000000fdffffff0c193fb8cebb064605468ca09296d068c27099b79a30659d1ff13c190acd45fd0000000000fdffffff0200e876481700000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030e0c90c8f00000000225220977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d110034075c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe715120aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221010103407dd656032d3b1997bc3505fcb56607055b5087833bbfe9b5a46253e717a925b6bde0ddd5432159da24694fb3e6e6a1c312d3befa16683ef5da63ec66ed79024120d922837606a60d0b2c6aae877f7201e4396cf396264e28216ad701856c597ae7010100000000",
+  "txid": "6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11",
+  "vsize": 229,
+  "fee_sat": 20000,
+  "core_result": "accepted by testmempoolaccept, broadcast, confirmed in a block",
+  "core_wallet_signatures_verify_against_these_hashes": true
+ },
+ "invalid_spends": {
+  "note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth Core v30.5.4",
+  "cases": [
+   {
+    "name": "scheme id 0x02 (reserved, not active)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "02"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+   },
+   {
+    "name": "scheme id 0x00",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "00"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+   },
+   {
+    "name": "public key of another wallet key, with that key's valid signature",
+    "witness_input_0": [
+     "26f5d1775c2cd35ee5857c2021c77308199aff3cac4e298943365a6d388e2d5437ad0674ec1cdb285ea945dd1da0da67cc014133beb68971a3da758e80a71862",
+     "ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c5",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+   },
+   {
+    "name": "signature with the last bit flipped",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7150",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)"
+   },
+   {
+    "name": "extra witness item before the signature",
+    "witness_input_0": [
+     "01",
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+   },
+   {
+    "name": "scheme id missing (signature and key only)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+   }
+  ]
+ },
+ "reserved_scheme_output": {
+  "note": "An output that commits to scheme id 0x02 cannot be spent under the rules of v30.5.4: a witness with scheme id 0x02 is refused, and a witness with scheme id 0x01 gives a different commitment. Wallets must not create such outputs.",
+  "chain": "regtest",
+  "key_path": "m/88h/1h/0h/1/1",
+  "scheme_id": 2,
+  "commitment": "6b099bde94db5f612ad4551edecaacd48f02f3e371f909ab552cfb4c0121d785",
+  "scriptPubKey": "52206b099bde94db5f612ad4551edecaacd48f02f3e371f909ab552cfb4c0121d785",
+  "address": "rnorth1zdvyehh55md0kz2k5250daj4v6j8s9ulrw8usn2649na5cqfp67zst6a9zq",
+  "funding": {
+   "txid": "77c751aa49fbb4c31a860843c477bbdeada293f4e41638ed4bdb66b5cdb1f361",
+   "vout": 0,
+   "amount_sat": 51200000000,
+   "block_height": 3
+  },
+  "spend_attempts": [
+   {
+    "witness_scheme_id": 2,
+    "signed_tx": "0200000000010161f3b1cdb566db4bed3816e4f493a2addebb77c44308861ac3b4fb49aa51c7770000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c0300340e98a72472e7e7cc3eaf761d50b6609890a2320c1bfc1208148fcdd1dd95cdc5ebb8983a9f21cfbf7146b83fa5a4571e284d1d06bf4cfb7b376f86dee0245a880206f9522fc04b2e0650af589e3b5f4c8eb6e6e75849151444ec82d722decfee9be010200000000",
+    "mempool_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)",
+    "block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program hash mismatch), input 0 of a708efbaac8499746df78070415fef0e160f3b20f0e0b88082837121ef9fc83d (wtxid c110843c0117f9e000551d059f0a6e76e7b40d0b2507464d566d1794905a28a1), spending 77c751aa49fbb4c31a860843c477bbdeada293f4e41638ed4bdb66b5cdb1f361:0"
+   },
+   {
+    "witness_scheme_id": 1,
+    "signed_tx": "0200000000010161f3b1cdb566db4bed3816e4f493a2addebb77c44308861ac3b4fb49aa51c7770000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c0300340e98a72472e7e7cc3eaf761d50b6609890a2320c1bfc1208148fcdd1dd95cdc5ebb8983a9f21cfbf7146b83fa5a4571e284d1d06bf4cfb7b376f86dee0245a880206f9522fc04b2e0650af589e3b5f4c8eb6e6e75849151444ec82d722decfee9be010100000000",
+    "mempool_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)",
+    "block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program hash mismatch), input 0 of a708efbaac8499746df78070415fef0e160f3b20f0e0b88082837121ef9fc83d (wtxid 833256dd099815134fd170b36eefb6e45ae4ddfa45807c31890afb645d99000f), spending 77c751aa49fbb4c31a860843c477bbdeada293f4e41638ed4bdb66b5cdb1f361:0"
+   }
+  ],
+  "control": "the same one-input transaction shape, spending the scheme 0x01 output of block 4 with key 0/2, is accepted by testmempoolaccept"
+ }
+}

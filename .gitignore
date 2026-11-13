@@ -1,0 +1,11 @@
+# public output of the tool and things you download next to it
+out/
+out-dry-run/
+bin/
+truenorth-v*/
+*.tar.gz
+SHA256SUMS
+SHA256SUMS.asc
+# never commit these
+cold-keys.json
+__pycache__/
