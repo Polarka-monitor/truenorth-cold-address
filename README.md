@@ -10,9 +10,9 @@ This is an independent community tool. It is not published or endorsed by the Tr
 
 ## Status
 
-- **Not audited.** The code and the tests were written with an AI model (Claude) under the direction of
-  one person. About 650 lines of Python, standard library only, written to be read.
-  Read it, rehearse with `--dry-run`, and start with small amounts.
+- **Not audited.** The code and the tests were written with an AI model (Claude, named Cloe in the commit
+  history) under the direction of one person. About 650 lines of Python, standard library only, written
+  to be read. Read it, rehearse with `--dry-run`, and start with small amounts.
 - Making and checking an address is guided. **Spending is still done by hand** with TrueNorth Core
   (see [Spending](#spending)); a guided version is the next step.
 - Works with the official **v30.5.4** programs on **macOS (Apple silicon)** and **Linux (x86_64)**.
@@ -162,9 +162,8 @@ sh tests/run-all.sh
 
 runs the self-test of `tn-seed.py`, 35 checks of the whole procedure through a pseudo-terminal
 (`tests/test_ceremony.py`), the spending test on regtest (`tests/test_spend.py`), regenerates the test
-vectors and compares them byte for byte, and checks `FILES.sha256`. Last full run: 13 November 2026,
-Linux x86_64, official v30.5.4 programs. On macOS (Apple silicon) the previous build was used for a real run
-and for dry runs; a full test run of version 1.1 there will follow.
+vectors and compares them byte for byte, and checks `FILES.sha256`. Last full runs: 13 November 2026, on
+Linux x86_64 and on macOS (Apple silicon), with the official v30.5.4 programs.
 
 ## Files
 
