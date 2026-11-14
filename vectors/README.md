@@ -54,9 +54,47 @@ key and the scheme id travel in the witness. The two-input, two-output transacti
 2. **Almost every P2QRH failure gives the same error**, `Witness program hash mismatch`: a wrong scheme id,
    a wrong number of witness items, a wrong key size, a commitment that does not match. Only the signature
    check has errors of its own (`Invalid Schnorr signature` in the file). The text does not tell you which
-   rule you broke; compare with the vectors.
+   rule you broke; compare with the vectors. This is so in v30.5.4. On master each rule has since been given
+   an error of its own, see the comparison below.
 
 ## Not covered
 
 Signature hash types other than `SIGHASH_DEFAULT`, the optional annex, testnet4 addresses, and script path
-spending (the consensus code of v30.5.4 accepts key path spends only).
+spending (the consensus code of v30.5.4 accepts key path spends only). The other hash types and the prefixes
+of the test networks are in TrueNorth Core's own set, see below.
+
+## Compared with TrueNorth Core's own vectors
+
+TrueNorth Core has since published a set of its own, `src/test/data/p2qrh_wallet_vectors.json`. It has what
+this set leaves out: the testnet, testnet4 and signet prefixes, extended public keys and descriptors with key
+origin, every signature hash type, addresses that must be refused, and six more witness shapes that must be
+refused. This set has what that one leaves out: everything here was produced against a running node.
+
+`compare-upstream.py` computes every value of Core's file again with the code behind this set, and compares:
+
+```sh
+python3 vectors/compare-upstream.py PATH/TO/p2qrh_wallet_vectors.json
+```
+
+It needs no node, writes nothing, and uses nothing of Core's generator. With Core's file at commit `ed6d245`
+(SHA-256 `e8709e70031254f677890831d5eb6c08013b7f051b49863bf04138556892ddde`) it reported 64 checks and no
+difference on 14 November 2026: 61 comparisons with Core's values and 3 controls on this set. The witnesses
+that must be refused are judged by the order of the rules as it reads in `src/script/interpreter.cpp`. That
+part is a model of the rules, written down by hand, and not a second implementation of them.
+
+The same commit gives each P2QRH rule a script error of its own. It is on master and in no release yet, so the
+reasons in `invalid_spends` and `reserved_scheme_output` are still those of v30.5.4. By the new order of the
+rules they become, as read from the code and not yet run:
+
+| Case in the file | v30.5.4 | master at `ed6d245` |
+|---|---|---|
+| scheme id `0x02` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
+| scheme id `0x00` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
+| another key with that key's valid signature | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
+| signature with the last bit flipped | Invalid Schnorr signature | `SCHNORR_SIG` |
+| extra item before the signature | Witness program hash mismatch | `QRH_WITNESS_SIZE` |
+| scheme id missing | Witness program hash mismatch | `QRH_SCHEME_SIZE` |
+| output committed to `0x02`, witness says `0x02` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
+| output committed to `0x02`, witness says `0x01` | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
+
+The file will be made again against the first release that carries the change.

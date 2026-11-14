@@ -196,7 +196,8 @@ system on the offline computer, and mistakes made later while spending.
 
 `vectors/p2qrh-test-vectors.json` is for people who write wallets. It was made by `vectors/tnvec.py`, which
 shares no code with TrueNorth Core, and every value was checked against the official v30.5.4 programs on
-regtest. See [vectors/README.md](vectors/README.md).
+regtest. TrueNorth Core has since published a set of its own; `vectors/compare-upstream.py` computes that set
+again with the code behind this one, and the two agree. See [vectors/README.md](vectors/README.md).
 
 ## Tests
 
@@ -221,12 +222,13 @@ the programs that made them.
 | `english.txt` | The standard BIP39 English word list, unchanged (SHA-256 `2f5eed53...3b24dbda`). |
 | `SECURITY-REVIEW.md` | What two reviews of version 1.1 found, and what version 1.2 changed. |
 | `review/` | Evidence and programs of the internal review; the second review in full. |
-| `vectors/` | P2QRH test vectors and the program that makes them. |
+| `vectors/` | P2QRH test vectors, the program that makes them, and the comparison with TrueNorth Core's own set. |
 | `tests/` | The tests described above. |
 | `FILES.sha256` | SHA-256 checksums of the files above. |
 
 ## Versions
 
+- 14 November 2026: `vectors/compare-upstream.py` added. The tool is unchanged and still 1.2.
 - 1.2 (13 November 2026): the fixes from the security review. Core is given only the public key of the
   account; the tool makes sure it talks to its own helper node; it refuses screen, tmux and SSH; it cleans up
   when the window is closed or the process is killed; no core dumps; the offline check on Linux asks the kernel
