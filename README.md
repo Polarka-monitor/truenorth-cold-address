@@ -195,11 +195,11 @@ system on the offline computer, and mistakes made later while spending.
 ## Test vectors for P2QRH
 
 `vectors/p2qrh-test-vectors.json` is for people who write wallets. It was made by `vectors/tnvec.py`, which
-shares no code with TrueNorth Core, and every value was checked against the official v30.5.5 programs on
-regtest: among them a refused spend for every P2QRH script error, and a spend with an annex (the mempool
-refuses it, a block takes it). TrueNorth Core has
-published a set of its own; `vectors/compare-upstream.py` computes that set again with the code behind this
-one, and the two agreed at commit `ed6d245`. See [vectors/README.md](vectors/README.md).
+shares no code with TrueNorth Core, and every value was checked against the official v30.5.5 programs on regtest:
+among them a refused spend for every P2QRH script error, and a spend with an annex (the mempool refuses it, a
+block takes it). TrueNorth Core has published a set of its own; `vectors/compare-upstream.py` computes that set
+again with the code behind this one; the two agree, last checked against the set of v30.5.5. See
+[vectors/README.md](vectors/README.md).
 
 ## Tests
 

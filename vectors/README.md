@@ -95,6 +95,12 @@ difference on 14 November 2026: 61 comparisons with Core's values and 3 controls
 that must be refused are judged by the order of the rules as it reads in `src/script/interpreter.cpp`. That
 part is a model of the rules, written down by hand, and not a second implementation of them.
 
+With the file of v30.5.5 (SHA-256 `cf58ac62673978101531cc75a1d1168024cac698a8828961285f0a30664e591a`) it reported
+87 checks and no difference on 21 November 2026: Core's values, the 3 controls, and 17 checks that hold the model
+against the reasons the node gave in a block for the refused spends and the annex of this set. The model takes an
+annex off as BIP-341 does, and signs with it; before that, Core's new case with `0x50` as the scheme id was the
+one it could not judge.
+
 The same commit gives each P2QRH rule a script error of its own, and v30.5.5 (21 November 2026) is the first
 release that carries it. The file is made against v30.5.5 now. The first eight rows came out as they were read
 from the code on 14 November; the last seven were added on 21 November, so that every script error in the table

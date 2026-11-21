@@ -7,8 +7,9 @@
 Every value of Core's file is computed again here with the code behind our set (cold-address.py and tnvec.py:
 Python standard library only, no code shared with TrueNorth Core or its test framework) and compared. Nothing
 is taken from Core's generator. The witnesses that must be refused are judged by the order of the P2QRH rules
-as it reads in src/script/interpreter.cpp (master, commit ed6d245): that part is a model of the rules, written
-down by hand, and not a second implementation of consensus.
+as it reads in src/script/interpreter.cpp (commit ed6d245, released in v30.5.5), with the annex as in BIP-341:
+that part is a model of the rules, written down by hand, and not a second implementation of consensus. The model
+is also held against the reasons TrueNorth Core gave in a block for the refused spends of our own file.
 
   python3 vectors/compare-upstream.py PATH/TO/p2qrh_wallet_vectors.json
 
@@ -171,8 +172,9 @@ def parse_tx(raw):
     return version, vin, vout, locktime, wit
 
 
-def sigmsg(version, locktime, vin, prevouts, vout, index, hash_type):
-    """BIP-341 signature message for a key-path spend without annex, every hash type; first byte is the epoch."""
+def sigmsg(version, locktime, vin, prevouts, vout, index, hash_type, annex=None):
+    """BIP-341 signature message for a key-path spend, every hash type, with or without an annex; first byte is
+    the epoch."""
     base, acp = hash_type & 3, hash_type & 0x80
     p = tv.sighash_parts(vin, prevouts, vout)
     m = bytes([hash_type]) + struct.pack("<i", version) + struct.pack("<I", locktime)
@@ -180,12 +182,14 @@ def sigmsg(version, locktime, vin, prevouts, vout, index, hash_type):
         m += p["sha_prevouts"] + p["sha_amounts"] + p["sha_scriptpubkeys"] + p["sha_sequences"]
     if base not in (2, 3):
         m += p["sha_outputs"]
-    m += b"\x00"
+    m += b"\x01" if annex is not None else b"\x00"          # spend type: key path, annex or not
     if acp:
         (t, n, seq), (a, s) = vin[index], prevouts[index]
         m += bytes.fromhex(t)[::-1] + struct.pack("<I", n) + struct.pack("<q", a) + tv.cs(len(s)) + s + struct.pack("<I", seq)
     else:
         m += struct.pack("<I", index)
+    if annex is not None:
+        m += tv.sha(tv.cs(len(annex)) + annex)
     if base == 3:
         m += tv.sha(tv.ser_out(*vout[index]))
     return b"\x00" + m
@@ -196,12 +200,12 @@ def sighash(*a):
 
 
 def verdict(stack, program, tx, prevouts, index):
-    """The order of the P2QRH rules as read in src/script/interpreter.cpp at master ed6d245; None means valid."""
+    """The order of the P2QRH rules as read in src/script/interpreter.cpp at ed6d245 (v30.5.5); None means valid.
+    An annex (two or more items, the last starting with 0x50) is taken off first and signed with, as in BIP-341."""
     st = list(stack)
     if not st:
         return "WITNESS_PROGRAM_WITNESS_EMPTY"
-    if len(st) >= 2 and st[-1] and st[-1][0] == 0x50:
-        return "(annex: not modelled here)"
+    annex = st.pop() if len(st) >= 2 and st[-1] and st[-1][0] == 0x50 else None
     if len(st) < 2:
         return "QRH_WITNESS_SIZE"
     sid = st.pop()
@@ -222,7 +226,7 @@ def verdict(stack, program, tx, prevouts, index):
     if (len(sig) == 65 and ht == 0) or ht not in (0, 1, 2, 3, 0x81, 0x82, 0x83) or (ht & 3 == 3 and index >= len(tx[2])):
         return "SCHNORR_SIG_HASHTYPE"
     version, vin, vout, locktime = tx[:4]
-    return None if tv.schnorr_verify(sighash(version, locktime, vin, prevouts, vout, index, ht), pk, sig[:64]) else "SCHNORR_SIG"
+    return None if tv.schnorr_verify(sighash(version, locktime, vin, prevouts, vout, index, ht, annex), pk, sig[:64]) else "SCHNORR_SIG"
 
 
 # ---------------------------------------------------------------- 0. our own file with the same tools (control)
@@ -338,22 +342,52 @@ for v in U["invalidKeyPathSpending"]:
     got = verdict([bytes.fromhex(x) for x in v["witness"]], prevouts[0][1][2:], tx, prevouts, 0)
     check("refused", "Core: " + v["comment"][:64], got == v["scriptError"], "Core %s, rule order here %s" % (v["scriptError"], got))
 
+# ---------------------------------------------------------------- 5. our own refused spends: the node's reasons in a block against the model
+
+REASONS = {"Witness program was passed an empty witness": "WITNESS_PROGRAM_WITNESS_EMPTY",
+           "P2QRH key-path witness must have exactly three elements": "QRH_WITNESS_SIZE",
+           "P2QRH scheme id must be exactly one byte": "QRH_SCHEME_SIZE",
+           "P2QRH scheme id is not active": "QRH_SCHEME_UNKNOWN",
+           "P2QRH public key has the wrong size for its scheme": "QRH_PUBKEY_SIZE",
+           "Witness program hash mismatch": "WITNESS_PROGRAM_MISMATCH",
+           "Invalid Schnorr signature size": "SCHNORR_SIG_SIZE",
+           "Invalid Schnorr signature hash type": "SCHNORR_SIG_HASHTYPE",
+           "Invalid Schnorr signature": "SCHNORR_SIG"}
+
+
+def node_error(text):
+    """The script error a node's reason names, by the table of doc/p2qrh.md (v30.5.5)."""
+    inner = text.split("(", 1)[1].split(")", 1)[0] if "(" in text else text
+    return REASONS.get(inner, inner)
+
+
+if O.get("core_version") and tuple(int(x) for x in O["core_version"].split()[-1].split(".")) >= (30, 5, 5):
+    for c in O["invalid_spends"]["cases"]:
+        got = verdict([bytes.fromhex(x) for x in c["witness_input_0"]], o_prev[0][1][2:], o_tx, o_prev, 0)
+        node = node_error(c["core_block_reject_reason"])
+        check("ours", "refused in a block: " + c["name"][:58], got == node, "node %s, model %s" % (node, got))
+    r = O["reserved_scheme_output"]
+    for a in r["spend_attempts"]:
+        t = parse_tx(a["signed_tx"])
+        pv = [(r["funding"]["amount_sat"], bytes.fromhex(r["scriptPubKey"]))]
+        got, node = verdict(t[4][0], pv[0][1][2:], t, pv, 0), node_error(a["block_reject_reason"])
+        check("ours", "refused in a block: output committed to 0x02, witness says 0x%02x" % a["witness_scheme_id"],
+              got == node, "node %s, model %s" % (node, got))
+    ax = O["annex"]
+    t = parse_tx(ax["signed_tx"])
+    pv = [(ax["input"]["amount_sat"], bytes.fromhex(ax["input"]["scriptPubKey"]))]
+    check("ours", "a spend with an annex, taken by a block, is valid in the model", verdict(t[4][0], pv[0][1][2:], t, pv, 0) is None)
+    t = parse_tx(ax["controls"][1]["signed_tx"])
+    got, node = verdict(t[4][0], pv[0][1][2:], t, pv, 0), node_error(ax["controls"][1]["block_reject_reason"])
+    check("ours", "an annex the signature leaves out, refused in a block", got == node, "node %s, model %s" % (node, got))
+else:
+    print("our file was made against %s: its reasons are not held against the model of v30.5.5"
+          % O.get("core_version", "v30.5.4"))
+
 print("extended key version bytes in Core's file (private, public):", versions)
 for g, name, ok, detail in results:
     print("%-4s %-10s %s%s" % ("ok" if ok else "FAIL", g, name, ("   [" + detail + "]") if detail else ""))
 bad = [r for r in results if not r[2]]
 print("\n%d checks, %d failed" % (len(results), len(bad)))
 
-# ---------------------------------------------------------------- 5. our six broken spends under the new rule order (a reading, not a run)
-
-print("\nour broken spends: reason given by v30.5.4 -> error by the rule order of master ed6d245 (read from the code, not run)")
-for c in O["invalid_spends"]["cases"]:
-    got = verdict([bytes.fromhex(x) for x in c["witness_input_0"]], o_prev[0][1][2:], o_tx, o_prev, 0)
-    print("  %-66s %s -> %s" % (c["name"], c["core_reject_reason"].split("(")[1].rstrip(")"), got))
-r = O["reserved_scheme_output"]
-for a in r["spend_attempts"]:
-    t = parse_tx(a["signed_tx"])
-    pv = [(r["funding"]["amount_sat"], bytes.fromhex(r["scriptPubKey"]))]
-    print("  %-66s %s -> %s" % ("output committed to scheme 0x02, witness scheme id 0x%02x" % a["witness_scheme_id"],
-                                 a["mempool_reject_reason"].split("(")[1].rstrip(")"), verdict(t[4][0], pv[0][1][2:], t, pv, 0)))
 sys.exit(1 if bad else 0)
