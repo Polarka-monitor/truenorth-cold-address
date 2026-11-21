@@ -45,9 +45,12 @@ key and the scheme id travel in the witness. The two-input, two-output transacti
   an all-zero auxiliary value, so the signatures are reproducible), the unsigned and the signed transaction and
   the transaction id. TrueNorth Core accepted it into the mempool and mined it. Signatures made by TrueNorth
   Core's own wallet for the same transaction verify against the signature hashes computed here.
-- `invalid_spends`: the same transaction with the witness of input 0 changed in six ways (other scheme ids,
-  another key, a damaged signature, an extra item, a missing scheme id), each with the reason TrueNorth Core
-  gave for refusing it.
+- `invalid_spends`: the same transaction with the witness of input 0 changed in thirteen ways, so that every
+  P2QRH script error in the table of TrueNorth Core's `doc/p2qrh.md` has at least one case: other scheme ids,
+  another key, a damaged signature, an extra item, a missing scheme id, an empty witness, a single item, a key
+  of 33 bytes, a signature of 63 bytes, two bad hash types and `0x50` as the scheme id. Each case has the reason
+  TrueNorth Core gave in the mempool (`testmempoolaccept`) and in a block (`generateblock` with that
+  transaction alone).
 - `reserved_scheme_output`: an output whose commitment was made with scheme id `0x02`. TrueNorth Core refuses
   to spend it both in the mempool and in a block, whether the witness says `0x02` or `0x01`. As a control,
   the same transaction shape spending an ordinary output of the same age is accepted.
@@ -63,8 +66,8 @@ key and the scheme id travel in the witness. The two-input, two-output transacti
 1. **Only scheme `0x01` can be spent today, and the scheme id is part of the commitment.** An output made with
    any other scheme id is frozen under the rules of v30.5.4 and v30.5.5. A wallet must never create one.
 2. **Since v30.5.5 each P2QRH rule has an error of its own**: an inactive scheme id, a wrong number of witness
-   items and a scheme id of the wrong size are named as such, and `Witness program hash mismatch` is left for a
-   commitment that does not match. In v30.5.4 almost every failure gave `Witness program hash mismatch`; the
+   items, a scheme id or a public key of the wrong size are named as such, and `Witness program hash mismatch`
+   is left for a commitment that does not match. In v30.5.4 almost every failure gave `Witness program hash mismatch`; the
    table at the end has both.
 
 ## Not covered
@@ -93,8 +96,9 @@ that must be refused are judged by the order of the rules as it reads in `src/sc
 part is a model of the rules, written down by hand, and not a second implementation of them.
 
 The same commit gives each P2QRH rule a script error of its own, and v30.5.5 (21 November 2026) is the first
-release that carries it. The file is made against v30.5.5 now, and every reason came out as it was read from
-the code on 14 November:
+release that carries it. The file is made against v30.5.5 now. The first eight rows came out as they were read
+from the code on 14 November; the last seven were added on 21 November, so that every script error in the table
+of `doc/p2qrh.md` has a case:
 
 | Case in the file | v30.5.4 | v30.5.5 | Error in the code |
 |---|---|---|---|
@@ -106,6 +110,16 @@ the code on 14 November:
 | scheme id missing | Witness program hash mismatch | P2QRH scheme id must be exactly one byte | `QRH_SCHEME_SIZE` |
 | output committed to `0x02`, witness says `0x02` | Witness program hash mismatch | P2QRH scheme id is not active | `QRH_SCHEME_UNKNOWN` |
 | output committed to `0x02`, witness says `0x01` | Witness program hash mismatch | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
+| empty witness | Witness program was passed an empty witness | Witness program was passed an empty witness | `WITNESS_PROGRAM_WITNESS_EMPTY` |
+| a single item, the signature | Witness program hash mismatch | P2QRH key-path witness must have exactly three elements | `QRH_WITNESS_SIZE` |
+| public key of 33 bytes | Witness program hash mismatch | P2QRH public key has the wrong size for its scheme | `QRH_PUBKEY_SIZE` |
+| signature of 63 bytes | Invalid Schnorr signature size | Invalid Schnorr signature size | `SCHNORR_SIG_SIZE` |
+| explicit hash type `0x00` (65 bytes) | Invalid Schnorr signature hash type | Invalid Schnorr signature hash type | `SCHNORR_SIG_HASHTYPE` |
+| undefined hash type `0x04` (65 bytes) | Invalid Schnorr signature hash type | Invalid Schnorr signature hash type | `SCHNORR_SIG_HASHTYPE` |
+| `0x50` as the scheme id, in a block | Witness program hash mismatch | P2QRH scheme id must be exactly one byte | `QRH_SCHEME_SIZE` |
 
 The node puts `mempool-script-verify-flag-failed` before each reason (in a block
-`block-script-verify-flag-failed`). The annex gives `bad-witness-nonstandard` in both releases.
+`block-script-verify-flag-failed`), and the mempool and a block give the same reason, with one exception: a
+last item that starts with `0x50` is an annex, which policy refuses first (`bad-witness-nonstandard` in the
+mempool, in both releases). In a block the annex is taken off, and the public key is then read as the scheme id.
+The spend in the section `annex` also gets `bad-witness-nonstandard` in both releases.

@@ -9,7 +9,8 @@ What it does:
   3. asks TrueNorth Core (regtest) to accept and mine that transaction,
   4. checks that signatures made by Core's own wallet for the same transaction verify against the
      signature hash computed here (so both sides hash the same message),
-  5. records how Core rejects a set of deliberately broken spends,
+  5. records how Core rejects a set of deliberately broken spends, in the mempool and in a block, with a case
+     for every P2QRH script error in the table of doc/p2qrh.md,
   6. funds an output that commits to the reserved scheme id 0x02 and records that Core refuses to spend it,
      in the mempool and in a block,
   7. spends an ordinary output with an annex (a last witness item that starts with 0x50, BIP-341): the mempool
@@ -293,12 +294,21 @@ def main():
         core_ok = [schnorr_verify(hashes[i], bytes.fromhex(core_wit[i][1]), bytes.fromhex(core_wit[i][0])) and core_wit[i][2] == "01" for i in range(2)]
         assert all(core_ok), core_ok
 
+        def block_refusal(hexstr, what):
+            try:
+                node.cli("generateblock", k02["address"], json.dumps([hexstr]))
+            except RuntimeError as e:
+                return str(e).replace("error code: -25\nerror message:\n", "")
+            raise SystemExit("a block took %s" % what)
+
         def broken(name, mutate):
             w = [list(x) for x in wit]
             mutate(w)
-            allowed, reason, _ = accept(ser_tx(version, vin, vout, locktime, w).hex())
+            hexstr = ser_tx(version, vin, vout, locktime, w).hex()
+            allowed, reason, _ = accept(hexstr)
             assert not allowed, name
-            return {"name": name, "witness_input_0": [i.hex() for i in w[0]], "core_reject_reason": reason}
+            return {"name": name, "witness_input_0": [i.hex() for i in w[0]], "core_reject_reason": reason,
+                    "core_block_reject_reason": block_refusal(hexstr, name)}
 
         other_sig = schnorr_sign(hashes[0], int(k02["private_key"], 16))
         bad = [
@@ -308,6 +318,14 @@ def main():
             broken("signature with the last bit flipped", lambda w: w[0].__setitem__(0, sigs[0][:63] + bytes([sigs[0][63] ^ 1]))),
             broken("extra witness item before the signature", lambda w: w[0].insert(0, b"\x01")),
             broken("scheme id missing (signature and key only)", lambda w: w[0].pop()),
+            # the rest of the script errors of the table in doc/p2qrh.md (added after v30.5.5 came out)
+            broken("empty witness", lambda w: w[0].clear()),
+            broken("a single item, the signature", lambda w: (w[0].pop(), w[0].pop())),
+            broken("public key of 33 bytes (0x02 before the x-only key)", lambda w: w[0].__setitem__(1, b"\x02" + w[0][1])),
+            broken("signature of 63 bytes", lambda w: w[0].__setitem__(0, w[0][0][:63])),
+            broken("signature with an explicit hash type 0x00 (65 bytes)", lambda w: w[0].__setitem__(0, w[0][0] + b"\x00")),
+            broken("signature with the undefined hash type 0x04 (65 bytes)", lambda w: w[0].__setitem__(0, w[0][0] + b"\x04")),
+            broken("0x50 as the scheme id (read as an annex)", lambda w: w[0].__setitem__(2, b"\x50")),
         ]
 
         txid = node.cli("sendrawtransaction", raw)
@@ -328,7 +346,9 @@ def main():
             "core_result": "accepted by testmempoolaccept, broadcast, confirmed in a block",
             "core_wallet_signatures_verify_against_these_hashes": all(core_ok),
         }
-        vec["invalid_spends"] = {"note": "same transaction with input 0's witness changed; reject reasons as returned by %s" % core, "cases": bad}
+        vec["invalid_spends"] = {"note": "same transaction with input 0's witness changed; reject reasons as returned by %s, "
+                                     "from testmempoolaccept and from generateblock with the transaction alone" % core,
+                             "cases": bad}
 
         # step 6: the coinbase of block 3 pays to the scheme 0x02 commitment; try to spend it both ways
         cb = node.cli("getblock", node.cli("getblockhash", "3"), "2")["tx"][0]
@@ -433,7 +453,8 @@ def main():
     print("mainnet address 0/0:", vec["chains"]["main"]["keys"][0]["address"])
     print("signed tx accepted and mined, txid", vec["spend"]["txid"], "vsize", vec["spend"]["vsize"])
     for c in bad:
-        print("rejected: %-70s -> %s" % (c["name"], c["core_reject_reason"]))
+        block = c["core_block_reject_reason"].split("(")[1].split(")")[0] if "(" in c["core_block_reject_reason"] else c["core_block_reject_reason"]
+        print("rejected: %-58s -> mempool: %s | block: %s" % (c["name"], c["core_reject_reason"], block))
     for c in vec["reserved_scheme_output"]["spend_attempts"]:
         print("scheme 0x02 output, witness scheme id 0x%02x: mempool: %s | block: %s"
               % (c["witness_scheme_id"], c["mempool_reject_reason"], c["block_reject_reason"]))

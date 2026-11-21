@@ -170,7 +170,7 @@
   "core_wallet_signatures_verify_against_these_hashes": true
  },
  "invalid_spends": {
-  "note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth 30.5.5",
+  "note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth 30.5.5, from testmempoolaccept and from generateblock with the transaction alone",
   "cases": [
    {
     "name": "scheme id 0x02 (reserved, not active)",
@@ -179,7 +179,8 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "02"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH scheme id is not active), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 480b4ea80deb2a465570f02bc0ef19c53d1e673d5807d3b95656ccba83f82d67), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    },
    {
     "name": "scheme id 0x00",
@@ -188,7 +189,8 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "00"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH scheme id is not active), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 512dd9fe519c5455a69a346f30d2fc0adc3a384d8a833a580c1528208ac4b719), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    },
    {
     "name": "public key of another wallet key, with that key's valid signature",
@@ -197,7 +199,8 @@
      "ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c5",
      "01"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program hash mismatch), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 8bc4c6cac926b12a467a410666628a64696e5ff239a2d2abda5736cb553a0c2e), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    },
    {
     "name": "signature with the last bit flipped",
@@ -206,7 +209,8 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "01"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid dbbd2887f82d51cb3b2bd49792990f28c4262414073ab2cedd30ccb9a2b0ac3b), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    },
    {
     "name": "extra witness item before the signature",
@@ -216,7 +220,8 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "01"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 0ffb5a0c078ca2b90135ac2c3f4cb49555b537920e5cde05cd58a229c0c6a496), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    },
    {
     "name": "scheme id missing (signature and key only)",
@@ -224,7 +229,72 @@
      "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id must be exactly one byte)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id must be exactly one byte)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH scheme id must be exactly one byte), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid d2ad58bbe6673ce8596b5c4d404ba530982514681380b80ae097df58d6837904), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "empty witness",
+    "witness_input_0": [],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program was passed an empty witness)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program was passed an empty witness), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 7c7d023167f2839131dadddefc0a3b28517dae0e33fe914504d0c0402086c436), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "a single item, the signature",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid fec14817bbc3d17f71ab9e5ca7d10c919a8b8f3889b648ecb86b2625d2704c65), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "public key of 33 bytes (0x02 before the x-only key)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "02aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH public key has the wrong size for its scheme)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH public key has the wrong size for its scheme), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid e4bc8598be9a1ad919bfb00db5dcdab2afac61adc830128ad7518003e187b514), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "signature of 63 bytes",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe71",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature size)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature size), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid a7cc4fcfd7861a3e5433a3205e9eff40bd90b094aa15a913b58804d6db3017e2), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "signature with an explicit hash type 0x00 (65 bytes)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe715100",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid fe7b41da6be5d1fd47d72f74d7cd7f137987be946acb3d87b77350bbcd6c4076), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "signature with the undefined hash type 0x04 (65 bytes)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe715104",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "01"
+    ],
+    "core_reject_reason": "mempool-script-verify-flag-failed (Invalid Schnorr signature hash type)",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature hash type), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid 6ce185865515c988f7154df3d35ff0e7f7a62ec454d7fd6dd587c11b399f615f), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
+   },
+   {
+    "name": "0x50 as the scheme id (read as an annex)",
+    "witness_input_0": [
+     "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
+     "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
+     "50"
+    ],
+    "core_reject_reason": "bad-witness-nonstandard",
+    "core_block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH scheme id must be exactly one byte), input 0 of 6c3bb7c85cafd957f135f8168ca9365b0de76e918cec602b15cb6aad6e701c11 (wtxid dd490de643d0edf07d81903fb43ede0aa81c1d161af35d81599a21a5bcb79cac), spending 70c25483749d1e260f5ca7006250cfea53c47113239f6d1bdda6cbca864add92:0"
    }
   ]
  },

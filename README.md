@@ -196,7 +196,8 @@ system on the offline computer, and mistakes made later while spending.
 
 `vectors/p2qrh-test-vectors.json` is for people who write wallets. It was made by `vectors/tnvec.py`, which
 shares no code with TrueNorth Core, and every value was checked against the official v30.5.5 programs on
-regtest, a spend with an annex among them (the mempool refuses it, a block takes it). TrueNorth Core has
+regtest: among them a refused spend for every P2QRH script error, and a spend with an annex (the mempool
+refuses it, a block takes it). TrueNorth Core has
 published a set of its own; `vectors/compare-upstream.py` computes that set again with the code behind this
 one, and the two agreed at commit `ed6d245`. See [vectors/README.md](vectors/README.md).
 
@@ -230,8 +231,10 @@ the programs that made them.
 ## Versions
 
 - 21 November 2026: the test vectors made again against v30.5.5, which gives each P2QRH rule a reject reason
-  of its own, and a spend with an annex added (asked for in discussion #34 of TrueNorth Core). The tool is
-  unchanged and still 1.2.
+  of its own; a spend with an annex added (asked for in discussion #34 of TrueNorth Core), and refused spends
+  for the script errors that had no case (an empty witness, a single item, a key of 33 bytes, a signature of 63
+  bytes, two bad hash types, `0x50` as the scheme id), each with the reason of the mempool and of a block. The
+  tool is unchanged and still 1.2.
 - 14 November 2026: `vectors/compare-upstream.py` added. The tool is unchanged and still 1.2.
 - 1.2 (13 November 2026): the fixes from the security review. Core is given only the public key of the
   account; the tool makes sure it talks to its own helper node; it refuses screen, tmux and SSH; it cleans up
