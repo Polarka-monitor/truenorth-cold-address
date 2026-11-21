@@ -1,21 +1,26 @@
 # P2QRH test vectors
 
 `p2qrh-test-vectors.json` gives wallet authors something to test against: keys, addresses, a signed
-transaction that TrueNorth Core accepted and mined, and spends that it refused.
+transaction that TrueNorth Core accepted and mined, spends that it refused, and a spend with an annex that the
+mempool refuses and a block takes.
 
 The file is made by `tnvec.py`. That program uses only the Python standard library and shares no code with
 TrueNorth Core (the secp256k1, BIP32 and bech32m code lives in `../cold-address.py`). Every value in the file
-was checked against the official v30.5.4 programs on regtest while the file was made, and running the program
-again gives the same file byte for byte:
+was checked against the official v30.5.5 programs on regtest while the file was made (the archive
+`truenorth-v30.5.5-macos-arm64.tar.gz` matched the release's `SHA256SUMS`), and running the program again
+with the same release gives the same file byte for byte:
 
 ```sh
-python3 vectors/tnvec.py /tmp/vectors.json && cmp /tmp/vectors.json vectors/p2qrh-test-vectors.json
+TN_BIN=PATH/TO/truenorth-v30.5.5/bin python3 vectors/tnvec.py /tmp/vectors.json && cmp /tmp/vectors.json vectors/p2qrh-test-vectors.json
 ```
+
+Without `TN_BIN` it takes the v30.5.4 programs that `cold-address.py` knows by their checksums; the file then
+differs only in the version it names and in the reasons for refusal (the table at the end).
 
 All keys come from the public BIP39 test phrase (`abandon` eleven times, then `about`).
 **Never send coins to these addresses on mainnet.**
 
-## What P2QRH looks like on the wire (v30.5.4)
+## What P2QRH looks like on the wire (v30.5.5, as in v30.5.4)
 
 | Item | Value |
 |---|---|
@@ -24,7 +29,7 @@ All keys come from the public BIP39 test phrase (`abandon` eleven times, then `a
 | Address | bech32m, prefix `north` (mainnet), `rnorth` (regtest) |
 | Key path | `m/88h/1867h/0h/branch/index` on mainnet, coin type `1h` on test chains; branch 0 receive, 1 change |
 | Extended private key version | `7e5c6544` on mainnet (`Tprv...`), `04358390` on regtest |
-| Witness of a spend | three items in this order: signature (64 bytes), x-only public key (32 bytes), scheme id (1 byte, `0x01`) |
+| Witness of a spend | three items in this order: signature (64 bytes), x-only public key (32 bytes), scheme id (1 byte, `0x01`); an annex after them is valid in a block but refused by policy, and wallets must not add one |
 | Signed message | the BIP-341 key path signature hash (`SIGHASH_DEFAULT`, no annex), signed with BIP-340 Schnorr |
 
 A spend carries 101 bytes of witness per input, against 66 for a Taproot key path spend, because the public
@@ -46,21 +51,26 @@ key and the scheme id travel in the witness. The two-input, two-output transacti
 - `reserved_scheme_output`: an output whose commitment was made with scheme id `0x02`. TrueNorth Core refuses
   to spend it both in the mempool and in a block, whether the witness says `0x02` or `0x01`. As a control,
   the same transaction shape spending an ordinary output of the same age is accepted.
+- `annex`: a spend of an ordinary output with an annex after the three items (`0x50` and five bytes; as in
+  BIP-341, a last item that starts with `0x50` is the annex, it is taken off before the P2QRH rules look at the
+  witness, and the signed message covers it). The mempool refuses it (`bad-witness-nonstandard`); a block takes
+  it. Two controls: the same spend without the annex is accepted by the mempool, and with an annex that the
+  signature leaves out the block is refused (`Invalid Schnorr signature`), which shows that the annex is signed.
+- `core_version`: the TrueNorth Core the file was checked against.
 
 ## Two things worth knowing
 
 1. **Only scheme `0x01` can be spent today, and the scheme id is part of the commitment.** An output made with
-   any other scheme id is frozen under the rules of v30.5.4. A wallet must never create one.
-2. **Almost every P2QRH failure gives the same error**, `Witness program hash mismatch`: a wrong scheme id,
-   a wrong number of witness items, a wrong key size, a commitment that does not match. Only the signature
-   check has errors of its own (`Invalid Schnorr signature` in the file). The text does not tell you which
-   rule you broke; compare with the vectors. This is so in v30.5.4. On master each rule has since been given
-   an error of its own, see the comparison below.
+   any other scheme id is frozen under the rules of v30.5.4 and v30.5.5. A wallet must never create one.
+2. **Since v30.5.5 each P2QRH rule has an error of its own**: an inactive scheme id, a wrong number of witness
+   items and a scheme id of the wrong size are named as such, and `Witness program hash mismatch` is left for a
+   commitment that does not match. In v30.5.4 almost every failure gave `Witness program hash mismatch`; the
+   table at the end has both.
 
 ## Not covered
 
-Signature hash types other than `SIGHASH_DEFAULT`, the optional annex, testnet4 addresses, and script path
-spending (the consensus code of v30.5.4 accepts key path spends only). The other hash types and the prefixes
+Signature hash types other than `SIGHASH_DEFAULT`, testnet4 addresses, and script path spending (not active:
+the consensus code of v30.5.5 accepts key path spends only). The other hash types and the prefixes
 of the test networks are in TrueNorth Core's own set, see below.
 
 ## Compared with TrueNorth Core's own vectors
@@ -82,19 +92,20 @@ difference on 14 November 2026: 61 comparisons with Core's values and 3 controls
 that must be refused are judged by the order of the rules as it reads in `src/script/interpreter.cpp`. That
 part is a model of the rules, written down by hand, and not a second implementation of them.
 
-The same commit gives each P2QRH rule a script error of its own. It is on master and in no release yet, so the
-reasons in `invalid_spends` and `reserved_scheme_output` are still those of v30.5.4. By the new order of the
-rules they become, as read from the code and not yet run:
+The same commit gives each P2QRH rule a script error of its own, and v30.5.5 (21 November 2026) is the first
+release that carries it. The file is made against v30.5.5 now, and every reason came out as it was read from
+the code on 14 November:
 
-| Case in the file | v30.5.4 | master at `ed6d245` |
-|---|---|---|
-| scheme id `0x02` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
-| scheme id `0x00` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
-| another key with that key's valid signature | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
-| signature with the last bit flipped | Invalid Schnorr signature | `SCHNORR_SIG` |
-| extra item before the signature | Witness program hash mismatch | `QRH_WITNESS_SIZE` |
-| scheme id missing | Witness program hash mismatch | `QRH_SCHEME_SIZE` |
-| output committed to `0x02`, witness says `0x02` | Witness program hash mismatch | `QRH_SCHEME_UNKNOWN` |
-| output committed to `0x02`, witness says `0x01` | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
+| Case in the file | v30.5.4 | v30.5.5 | Error in the code |
+|---|---|---|---|
+| scheme id `0x02` | Witness program hash mismatch | P2QRH scheme id is not active | `QRH_SCHEME_UNKNOWN` |
+| scheme id `0x00` | Witness program hash mismatch | P2QRH scheme id is not active | `QRH_SCHEME_UNKNOWN` |
+| another key with that key's valid signature | Witness program hash mismatch | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
+| signature with the last bit flipped | Invalid Schnorr signature | Invalid Schnorr signature | `SCHNORR_SIG` |
+| extra item before the signature | Witness program hash mismatch | P2QRH key-path witness must have exactly three elements | `QRH_WITNESS_SIZE` |
+| scheme id missing | Witness program hash mismatch | P2QRH scheme id must be exactly one byte | `QRH_SCHEME_SIZE` |
+| output committed to `0x02`, witness says `0x02` | Witness program hash mismatch | P2QRH scheme id is not active | `QRH_SCHEME_UNKNOWN` |
+| output committed to `0x02`, witness says `0x01` | Witness program hash mismatch | Witness program hash mismatch | `WITNESS_PROGRAM_MISMATCH` |
 
-The file will be made again against the first release that carries the change.
+The node puts `mempool-script-verify-flag-failed` before each reason (in a block
+`block-script-verify-flag-failed`). The annex gives `bad-witness-nonstandard` in both releases.

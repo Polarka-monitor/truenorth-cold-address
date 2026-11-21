@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """tnvec: P2QRH test vectors for TrueNorth (NORTH), made by an implementation that shares no code with
-TrueNorth Core and checked against the official v30.5.4 programs on regtest.
+TrueNorth Core and checked against the official TrueNorth Core programs on regtest (the version is written into
+the file).
 
 What it does:
   1. derives keys and P2QRH addresses from the public BIP39 test phrase (m/88h/COINh/0h/branch/index),
@@ -11,15 +12,19 @@ What it does:
   5. records how Core rejects a set of deliberately broken spends,
   6. funds an output that commits to the reserved scheme id 0x02 and records that Core refuses to spend it,
      in the mempool and in a block,
-  7. writes everything to p2qrh-test-vectors.json.
+  7. spends an ordinary output with an annex (a last witness item that starts with 0x50, BIP-341): the mempool
+     refuses it, a block takes it; as controls, the same spend without the annex is taken by the mempool, and
+     with an annex that the signature does not cover it is refused in a block,
+  8. writes everything to p2qrh-test-vectors.json.
 
 Python standard library only. The keys in the output belong to a public test phrase: never send coins to them
 on mainnet.
 
   python3 vectors/tnvec.py [output.json]
 
-The TrueNorth Core programs are found the same way as by cold-address.py (./bin, an unpacked release folder
-next to it, or the folder named by the TN_BIN environment variable). Running it again gives the same file,
+The TrueNorth Core programs are those in the folder named by the TN_BIN environment variable, of any release
+(check the release's archive against its SHA256SUMS first; the version the node reports goes into the file), or
+else the v30.5.4 programs that cold-address.py finds by their checksums (./bin or an unpacked release folder). Running it again gives the same file,
 byte for byte: regtest coinbase transactions and BIP-340 signatures with a fixed auxiliary value are deterministic.
 """
 import hashlib
@@ -154,12 +159,15 @@ def sighash_parts(vin, prevouts, vout):
             "sha_outputs": sha(b"".join(ser_out(a, s) for a, s in vout))}
 
 
-def sighash(version, locktime, vin, prevouts, vout, index, hash_type=0):
-    """BIP-341 signature hash for a key-path spend, no annex (the message P2QRH signs under scheme 0x01)."""
+def sighash(version, locktime, vin, prevouts, vout, index, hash_type=0, annex=None):
+    """BIP-341 signature hash for a key-path spend (the message P2QRH signs under scheme 0x01). With an annex the
+    spend type is 1 and SHA256(compact size || annex) follows the input index, as BIP-341 says."""
     p = sighash_parts(vin, prevouts, vout)
     msg = bytes([hash_type]) + struct.pack("<i", version) + struct.pack("<I", locktime)
     msg += p["sha_prevouts"] + p["sha_amounts"] + p["sha_scriptpubkeys"] + p["sha_sequences"] + p["sha_outputs"]
-    msg += b"\x00" + struct.pack("<I", index)
+    msg += (b"\x01" if annex is not None else b"\x00") + struct.pack("<I", index)
+    if annex is not None:
+        msg += sha(cs(len(annex)) + annex)
     return tagged("TapSighash", b"\x00" + msg)
 
 
@@ -168,6 +176,15 @@ def txid_of(version, vin, vout, locktime):
 
 
 # ---------------------------------------------------------------- TrueNorth Core on regtest
+
+def node_bin():
+    """The programs to check against: the folder TN_BIN names, of any release (its version goes into the file),
+    or else the v30.5.4 programs that cold-address.py finds and knows by their checksums."""
+    d = os.environ.get("TN_BIN")
+    if d and all(os.path.isfile(os.path.join(d, p)) for p in ("truenorthd", "truenorth-cli")):
+        return d
+    return sa.find_bin()
+
 
 class Node:
     def __init__(self, bindir):
@@ -216,7 +233,7 @@ def main():
     seed = tn.bip39_seed(MNEMONIC)
     vec = {"description": "P2QRH test vectors for TrueNorth (NORTH). Keys come from the public BIP39 test phrase; test use only.",
            "made_with": "vectors/tnvec.py (Python standard library only, no code shared with TrueNorth Core); "
-                        "every value was checked against TrueNorth Core v30.5.4 on regtest",
+                        "every value was checked against TrueNorth Core (see core_version) on regtest",
            "mnemonic": MNEMONIC, "bip39_passphrase": "", "seed": seed.hex(), "derivation": "m/88h/COINh/0h/branch/index, x-only key",
            "commitment_formula": "SHA256('TrueNorth/QRH/v1' || scheme_id || xonly_pubkey || script_root), script_root = 32 zero bytes",
            "chains": {}}
@@ -231,8 +248,10 @@ def main():
     c2 = commitment(0x02, bytes.fromhex(k11["xonly_pubkey"]))
     spk2, addr2 = b"\x52\x20" + c2, sa._bech32m(sa.CHAINS["regtest"][0], 2, c2)
 
-    node = Node(sa.find_bin())
+    node = Node(node_bin())
     try:
+        core = node.cli("getnetworkinfo")["subversion"].strip("/").replace(":", " ")   # e.g. "TrueNorth 30.5.5"
+        vec["core_version"] = core
         # Core must derive the same addresses from the descriptors (receive and change branch)
         for d, want in zip(vec["chains"]["regtest"]["descriptors"], ([k00, k01, k02], [k10])):
             got = node.cli("-stdin", "deriveaddresses", stdin=d + "\n[0,%d]\n" % (len(want) - 1))
@@ -309,7 +328,7 @@ def main():
             "core_result": "accepted by testmempoolaccept, broadcast, confirmed in a block",
             "core_wallet_signatures_verify_against_these_hashes": all(core_ok),
         }
-        vec["invalid_spends"] = {"note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth Core v30.5.4", "cases": bad}
+        vec["invalid_spends"] = {"note": "same transaction with input 0's witness changed; reject reasons as returned by %s" % core, "cases": bad}
 
         # step 6: the coinbase of block 3 pays to the scheme 0x02 commitment; try to spend it both ways
         cb = node.cli("getblock", node.cli("getblockhash", "3"), "2")["tx"][0]
@@ -340,7 +359,7 @@ def main():
         assert ok3, why3
         cb = node.cli("getblock", node.cli("getblockhash", "3"), "2")["tx"][0]
         vec["reserved_scheme_output"] = {
-            "note": "An output that commits to scheme id 0x02 cannot be spent under the rules of v30.5.4: a witness with "
+            "note": "An output that commits to scheme id 0x02 cannot be spent under the rules of " + core + ": a witness with "
                     "scheme id 0x02 is refused, and a witness with scheme id 0x01 gives a different commitment. "
                     "Wallets must not create such outputs.",
             "chain": "regtest", "key_path": k11["path"], "scheme_id": 2, "commitment": c2.hex(), "scriptPubKey": spk2.hex(),
@@ -348,6 +367,62 @@ def main():
             "spend_attempts": attempts,
             "control": "the same one-input transaction shape, spending the scheme 0x01 output of block 4 with key 0/2, "
                        "is accepted by testmempoolaccept"}
+
+        # step 7: an annex on an ordinary spend of block 5's coinbase (key 0/2, scheme 0x01)
+        cb = node.cli("getblock", node.cli("getblockhash", "5"), "2")["tx"][0]
+        amount4, spk4 = round(cb["vout"][0]["value"] * 10 ** 8), bytes.fromhex(k02["scriptPubKey"])
+        assert cb["vout"][0]["scriptPubKey"]["hex"] == spk4.hex()
+        vin4, prevouts4 = [(cb["txid"], 0, seq)], [(amount4, spk4)]
+        vout4 = [(amount4 - fee, bytes.fromhex(k10["scriptPubKey"]))]
+        annex = b"\x50" + b"annex"
+        key02, priv02 = bytes.fromhex(k02["xonly_pubkey"]), int(k02["private_key"], 16)
+        h_annex = sighash(version, locktime, vin4, prevouts4, vout4, 0, annex=annex)
+        h_plain = sighash(version, locktime, vin4, prevouts4, vout4, 0)
+        sig_annex, sig_plain = schnorr_sign(h_annex, priv02), schnorr_sign(h_plain, priv02)
+        tx_annex = ser_tx(version, vin4, vout4, locktime, [[sig_annex, key02, bytes([SCHNORR]), annex]]).hex()
+        tx_annex_unsigned = ser_tx(version, vin4, vout4, locktime, [[sig_plain, key02, bytes([SCHNORR]), annex]]).hex()
+        tx_plain = ser_tx(version, vin4, vout4, locktime, [[sig_plain, key02, bytes([SCHNORR])]]).hex()
+        ok_plain, why_plain, _ = accept(tx_plain)
+        assert ok_plain, why_plain                       # control: without the annex the mempool takes the spend
+        ok_annex, why_annex, _ = accept(tx_annex)
+        assert not ok_annex, "the mempool took a spend with an annex"
+
+        def refused_in_block(hexstr):
+            try:
+                node.cli("generateblock", k02["address"], json.dumps([hexstr]))
+            except RuntimeError as e:
+                return str(e).replace("error code: -25\nerror message:\n", "")
+            raise SystemExit("a block took a spend whose signature does not cover its annex")
+
+        why_unsigned = refused_in_block(tx_annex_unsigned)
+        block4 = node.cli("generateblock", k02["address"], json.dumps([tx_annex]))["hash"]
+        txid4 = txid_of(version, vin4, vout4, locktime)
+        got = node.cli("getrawtransaction", txid4, "1", block4)
+        assert got["confirmations"] == 1 and got["hex"] == tx_annex, got
+        assert got["vin"][0]["txinwitness"] == [sig_annex.hex(), key02.hex(), "01", annex.hex()]
+        assert node.cli("gettxout", cb["txid"], "0") in ("", None)                    # the coinbase output is spent
+        assert round(node.cli("gettxout", txid4, "0")["value"] * 10 ** 8) == amount4 - fee
+        vec["annex"] = {
+            "note": "BIP-341: when a witness has two or more items and the last one starts with 0x50, that item is the annex. "
+                    "It is taken off before the P2QRH rules look at the witness, and the signed message covers it (spend "
+                    "type 1, then SHA256 of the annex with its compact size). Consensus accepts an annex so that a later "
+                    "soft fork can give it a meaning; policy refuses it; wallets must not add one.",
+            "chain": "regtest", "key_path": k02["path"],
+            "input": {"txid": cb["txid"], "vout": 0, "sequence": seq, "amount_sat": amount4, "scriptPubKey": spk4.hex(), "block_height": 5},
+            "outputs": [{"amount_sat": a, "scriptPubKey": s.hex()} for a, s in vout4],
+            "annex": annex.hex(),
+            "witness_layout": "signature (64 bytes), x-only public key (32 bytes), scheme id (1 byte, 0x01), annex",
+            "signature_hash_with_annex": h_annex.hex(), "signature": sig_annex.hex(),
+            "signed_tx": tx_annex, "txid": txid4,
+            "mempool_reject_reason": why_annex,
+            "block_result": "taken: generateblock with this transaction alone made a block, and the output it spends is gone",
+            "controls": [
+                {"what": "the same spend without the annex, signed over the signature hash without it",
+                 "signature_hash": h_plain.hex(), "signed_tx": tx_plain, "mempool": "accepted by testmempoolaccept"},
+                {"what": "the annex in the witness, but the signature made over the hash without it",
+                 "signed_tx": tx_annex_unsigned, "block_reject_reason": why_unsigned},
+            ],
+        }
     finally:
         node.stop()
     with open(out_path, "w") as f:
@@ -362,6 +437,10 @@ def main():
     for c in vec["reserved_scheme_output"]["spend_attempts"]:
         print("scheme 0x02 output, witness scheme id 0x%02x: mempool: %s | block: %s"
               % (c["witness_scheme_id"], c["mempool_reject_reason"], c["block_reject_reason"]))
+    a = vec["annex"]
+    print("annex: mempool: %s | block: taken, txid %s" % (a["mempool_reject_reason"], a["txid"]))
+    print("annex not covered by the signature: block: %s" % a["controls"][1]["block_reject_reason"])
+    print("made against", vec["core_version"])
 
 
 if __name__ == "__main__":

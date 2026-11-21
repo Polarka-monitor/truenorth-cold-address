@@ -1,6 +1,6 @@
 {
  "description": "P2QRH test vectors for TrueNorth (NORTH). Keys come from the public BIP39 test phrase; test use only.",
- "made_with": "vectors/tnvec.py (Python standard library only, no code shared with TrueNorth Core); every value was checked against TrueNorth Core v30.5.4 on regtest",
+ "made_with": "vectors/tnvec.py (Python standard library only, no code shared with TrueNorth Core); every value was checked against TrueNorth Core (see core_version) on regtest",
  "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
  "bip39_passphrase": "",
  "seed": "5eb00bbddcf069084889a8ab9155568165f5c453ccb85e70811aaed6f6da5fc19a5ac40b389cd370d086206dec8aa6c43daea6690f20ad3d8d48b2d2ce9e38e4",
@@ -110,6 +110,7 @@
    ]
   }
  },
+ "core_version": "TrueNorth 30.5.5",
  "spend": {
   "chain": "regtest",
   "what": "two P2QRH key-path inputs (keys 0/0 and 0/1), outputs to 1/0 and 0/2, SIGHASH_DEFAULT",
@@ -169,7 +170,7 @@
   "core_wallet_signatures_verify_against_these_hashes": true
  },
  "invalid_spends": {
-  "note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth Core v30.5.4",
+  "note": "same transaction with input 0's witness changed; reject reasons as returned by TrueNorth 30.5.5",
   "cases": [
    {
     "name": "scheme id 0x02 (reserved, not active)",
@@ -178,7 +179,7 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "02"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)"
    },
    {
     "name": "scheme id 0x00",
@@ -187,7 +188,7 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "00"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)"
    },
    {
     "name": "public key of another wallet key, with that key's valid signature",
@@ -215,7 +216,7 @@
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221",
      "01"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH key-path witness must have exactly three elements)"
    },
    {
     "name": "scheme id missing (signature and key only)",
@@ -223,12 +224,12 @@
      "75c5b59c984b548412dc5a5deea3e29df725fab1087e23f0ff07fb9dbc229c555c044aabd4acd65d36e2940b19544700b28eeef1f870f51d53b3b0adc6fe7151",
      "aa8b07706ab9645159afff8ea478f616c1925a363de097fc73718764f4117221"
     ],
-    "core_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)"
+    "core_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id must be exactly one byte)"
    }
   ]
  },
  "reserved_scheme_output": {
-  "note": "An output that commits to scheme id 0x02 cannot be spent under the rules of v30.5.4: a witness with scheme id 0x02 is refused, and a witness with scheme id 0x01 gives a different commitment. Wallets must not create such outputs.",
+  "note": "An output that commits to scheme id 0x02 cannot be spent under the rules of TrueNorth 30.5.5: a witness with scheme id 0x02 is refused, and a witness with scheme id 0x01 gives a different commitment. Wallets must not create such outputs.",
   "chain": "regtest",
   "key_path": "m/88h/1h/0h/1/1",
   "scheme_id": 2,
@@ -245,8 +246,8 @@
    {
     "witness_scheme_id": 2,
     "signed_tx": "0200000000010161f3b1cdb566db4bed3816e4f493a2addebb77c44308861ac3b4fb49aa51c7770000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c0300340e98a72472e7e7cc3eaf761d50b6609890a2320c1bfc1208148fcdd1dd95cdc5ebb8983a9f21cfbf7146b83fa5a4571e284d1d06bf4cfb7b376f86dee0245a880206f9522fc04b2e0650af589e3b5f4c8eb6e6e75849151444ec82d722decfee9be010200000000",
-    "mempool_reject_reason": "mempool-script-verify-flag-failed (Witness program hash mismatch)",
-    "block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Witness program hash mismatch), input 0 of a708efbaac8499746df78070415fef0e160f3b20f0e0b88082837121ef9fc83d (wtxid c110843c0117f9e000551d059f0a6e76e7b40d0b2507464d566d1794905a28a1), spending 77c751aa49fbb4c31a860843c477bbdeada293f4e41638ed4bdb66b5cdb1f361:0"
+    "mempool_reject_reason": "mempool-script-verify-flag-failed (P2QRH scheme id is not active)",
+    "block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (P2QRH scheme id is not active), input 0 of a708efbaac8499746df78070415fef0e160f3b20f0e0b88082837121ef9fc83d (wtxid c110843c0117f9e000551d059f0a6e76e7b40d0b2507464d566d1794905a28a1), spending 77c751aa49fbb4c31a860843c477bbdeada293f4e41638ed4bdb66b5cdb1f361:0"
    },
    {
     "witness_scheme_id": 1,
@@ -256,5 +257,45 @@
    }
   ],
   "control": "the same one-input transaction shape, spending the scheme 0x01 output of block 4 with key 0/2, is accepted by testmempoolaccept"
+ },
+ "annex": {
+  "note": "BIP-341: when a witness has two or more items and the last one starts with 0x50, that item is the annex. It is taken off before the P2QRH rules look at the witness, and the signed message covers it (spend type 1, then SHA256 of the annex with its compact size). Consensus accepts an annex so that a later soft fork can give it a meaning; policy refuses it; wallets must not add one.",
+  "chain": "regtest",
+  "key_path": "m/88h/1h/0h/0/2",
+  "input": {
+   "txid": "07d2f40cf3d13cac7baa4fe56cb2d5ff4b84d124ac8839a67d77c8706d881ffe",
+   "vout": 0,
+   "sequence": 4294967293,
+   "amount_sat": 51200000000,
+   "scriptPubKey": "5220977b680678dadc6c2f6b5f831af475900cd9e607d0b549e66f870bc89cf9d110",
+   "block_height": 5
+  },
+  "outputs": [
+   {
+    "amount_sat": 51199980000,
+    "scriptPubKey": "522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030"
+   }
+  ],
+  "annex": "50616e6e6578",
+  "witness_layout": "signature (64 bytes), x-only public key (32 bytes), scheme id (1 byte, 0x01), annex",
+  "signature_hash_with_annex": "9b768ae55a294da5869e66a70f0d969ba656bb0911c92128e809cbad3f5761ca",
+  "signature": "f5313ce4b156a90670e7de4c156ede6a9c8d22df19b278faa085d49ece8dacbbe727ac97194b21a76288486bac4d37c17e711b3dda0722f39f0443e8d94976e8",
+  "signed_tx": "02000000000101fe1f886d70c8777da63988ac24d1844bffd5b26ce54faa7bac3cd1f30cf4d2070000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c0300440f5313ce4b156a90670e7de4c156ede6a9c8d22df19b278faa085d49ece8dacbbe727ac97194b21a76288486bac4d37c17e711b3dda0722f39f0443e8d94976e820ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c501010650616e6e657800000000",
+  "txid": "6134fea8a8e92aaf5d1b229f5c1c42945681ac38678bd67ca6c129da404021bc",
+  "mempool_reject_reason": "bad-witness-nonstandard",
+  "block_result": "taken: generateblock with this transaction alone made a block, and the output it spends is gone",
+  "controls": [
+   {
+    "what": "the same spend without the annex, signed over the signature hash without it",
+    "signature_hash": "4cbe7940afbcbe385d6aaf8fbe8bd464e98b5f8b97d1ac5af32904b8291cf4ae",
+    "signed_tx": "02000000000101fe1f886d70c8777da63988ac24d1844bffd5b26ce54faa7bac3cd1f30cf4d2070000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030034070c37e78ab2e4245bdbd19d5da87f2934a243de992aab9b5d73b164cd4ec0a3e801d44179beaca28bfae546c39dd6a0fe2b4f85536411884f76d8df5e44785bb20ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c5010100000000",
+    "mempool": "accepted by testmempoolaccept"
+   },
+   {
+    "what": "the annex in the witness, but the signature made over the hash without it",
+    "signed_tx": "02000000000101fe1f886d70c8777da63988ac24d1844bffd5b26ce54faa7bac3cd1f30cf4d2070000000000fdffffff01e0b1c1eb0b00000022522018638a201b7882383ad1a88e1f50bcbab97fa0fee8f5bb42b57bdac56541c030044070c37e78ab2e4245bdbd19d5da87f2934a243de992aab9b5d73b164cd4ec0a3e801d44179beaca28bfae546c39dd6a0fe2b4f85536411884f76d8df5e44785bb20ede473a80677e7b93bf1d1c3a2b775fefa4e1e80d47d95d1c6793916249587c501010650616e6e657800000000",
+    "block_reject_reason": "TestBlockValidity failed: block-script-verify-flag-failed (Invalid Schnorr signature), input 0 of 6134fea8a8e92aaf5d1b229f5c1c42945681ac38678bd67ca6c129da404021bc (wtxid e923c8dc449306fe344eb8580e354106395ca0b20e32d9290888fe7234ef336e), spending 07d2f40cf3d13cac7baa4fe56cb2d5ff4b84d124ac8839a67d77c8706d881ffe:0"
+   }
+  ]
  }
 }

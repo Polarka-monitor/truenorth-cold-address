@@ -195,9 +195,10 @@ system on the offline computer, and mistakes made later while spending.
 ## Test vectors for P2QRH
 
 `vectors/p2qrh-test-vectors.json` is for people who write wallets. It was made by `vectors/tnvec.py`, which
-shares no code with TrueNorth Core, and every value was checked against the official v30.5.4 programs on
-regtest. TrueNorth Core has since published a set of its own; `vectors/compare-upstream.py` computes that set
-again with the code behind this one, and the two agree. See [vectors/README.md](vectors/README.md).
+shares no code with TrueNorth Core, and every value was checked against the official v30.5.5 programs on
+regtest, a spend with an annex among them (the mempool refuses it, a block takes it). TrueNorth Core has
+published a set of its own; `vectors/compare-upstream.py` computes that set again with the code behind this
+one, and the two agreed at commit `ed6d245`. See [vectors/README.md](vectors/README.md).
 
 ## Tests
 
@@ -209,8 +210,8 @@ runs the self-test of `tn-seed.py`; the whole procedure through a pseudo-termina
 refusals and a check that the helper node is only ever given public keys of the user's words
 (`tests/test_ceremony.py`); a stranger taking the helper node's port (`tests/test_port_owner.py`); the
 spending test on regtest (`tests/test_spend.py`); on Linux as root, the offline check and a whole real run in
-network namespaces (`tests/test_linux_offline.py`); it regenerates the test vectors and compares them byte
-for byte, and checks `FILES.sha256`. The folder `review/` holds the measurements of the security review and
+network namespaces (`tests/test_linux_offline.py`); it regenerates the test vectors against v30.5.5 (its
+programs in the folder named by `TN_VEC_BIN`) and compares them byte for byte, and checks `FILES.sha256`. The folder `review/` holds the measurements of the security review and
 the programs that made them.
 
 ## Files
@@ -228,6 +229,9 @@ the programs that made them.
 
 ## Versions
 
+- 21 November 2026: the test vectors made again against v30.5.5, which gives each P2QRH rule a reject reason
+  of its own, and a spend with an annex added (asked for in discussion #34 of TrueNorth Core). The tool is
+  unchanged and still 1.2.
 - 14 November 2026: `vectors/compare-upstream.py` added. The tool is unchanged and still 1.2.
 - 1.2 (13 November 2026): the fixes from the security review. Core is given only the public key of the
   account; the tool makes sure it talks to its own helper node; it refuses screen, tmux and SSH; it cleans up
